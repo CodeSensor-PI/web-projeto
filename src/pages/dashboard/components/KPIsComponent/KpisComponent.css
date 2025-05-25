@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 
-.card-kpi{
+.card-kpi {
     background-color: white;
     border-radius: 10px;
     border: var(--LightGrayFy) 1px solid;
@@ -10,14 +10,15 @@
     display: flex;
     align-items: center;
 
-    span{
+    span {
         font-size: 3em;
         font-weight: 600;
         color: var(--DarkGrayFy);
-        border-left: 10px solid var(--RedAlertFy);
+        /* border-left: 10px solid var(--RedAlertFy); */
         padding: 0 1em;
     }
-    p{
+
+    p {
         text-align: center;
         font-weight: 700;
     }
