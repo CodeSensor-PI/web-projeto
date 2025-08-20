@@ -6,11 +6,10 @@
     justify-content: space-between;
     align-items: center;
     padding: 1em;
-    
-    width: fit-content;
+    width: 32%;
     min-height: 10vh;
     background-color: var(--WhiteFy);
-    border-radius: 1em;
+    border-radius: 0.5em;
     gap: 0.5em;
     border: var(--LightGrayFy) 1px solid;
 
