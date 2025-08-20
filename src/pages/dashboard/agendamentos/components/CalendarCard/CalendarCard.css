@@ -27,19 +27,24 @@
     }
 }
 
+.calendario-card:hover{
+    background-color: var(--LightGrayFy) !important;
+}
+
 .btn_calendario {
     background-color: var(--LightBlueFy);
     color: var(--WhiteFy);
-    width: 100%;
+    width: 80%;
     justify-content: center;
-    padding: 0.1em 1em;
+    padding: 0.25em 1em;
     font-size: smaller;
     cursor: pointer;
     border-radius: 12em;
+    transition: ease-in-out 0.3s;
 
     &:hover {
         background-color: var(--DarkBlueFy);
-        transition: 0.3s;
+        width: 90%;
     }
 
     &:active {
