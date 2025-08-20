@@ -292,10 +292,10 @@ const CadastrarAgendamento = ({ paciente }) => {
       setPacienteSelecionado((prev) =>
         prev
           ? {
-              ...prev,
-              selectedDate: dayParam,
-              diaSemana: diaSemanaSelect,
-            }
+            ...prev,
+            selectedDate: dayParam,
+            diaSemana: diaSemanaSelect,
+          }
           : prev
       );
     }
@@ -342,39 +342,59 @@ const CadastrarAgendamento = ({ paciente }) => {
         >
           {/* Seção de seleção de paciente */}
           <div className="w-[80%] div-escolher-paciente">
-            <UserSearch
-              onUserSelect={(p) =>
-                setPacienteSelecionado(
-                  p
-                    ? montarPacienteComPadrao(p, {
-                        horario: pacienteSelecionado?.horario || horario,
-                        selectedDate:
-                          pacienteSelecionado?.selectedDate ||
-                          diaMesSelecionado,
-                        diaSemana: pacienteSelecionado?.diaSemana || diaSemana,
-                      })
-                    : undefined
-                )
-              }
-            />
+
+
             {!pacienteSelecionado || !pacienteSelecionado.id ? (
-              <p className="mensagem-escolha-paciente">
-                Selecione um paciente para continuar.
-              </p>
-            ) : (
-              <div className="paciente-info">
-                <p>
-                  <strong>Paciente:</strong> {pacienteSelecionado.nome}
-                </p>
-                <p>
-                  <strong>Dia para Consultas:</strong>{" "}
-                  {getNomeDiaSemana(preferencias.diaSemana)}
-                </p>
-                <p>
-                  <strong>Horário para Consultas:</strong>{" "}
-                  {preferencias.horario || "Indefinido"}
-                </p>
+              <div className=" w-[50%] div-input-escolher-paciente">
+                <UserSearch
+                  onUserSelect={(p) =>
+                    setPacienteSelecionado(
+                      p
+                        ? montarPacienteComPadrao(p, {
+                          horario: pacienteSelecionado?.horario || horario,
+                          selectedDate:
+                            pacienteSelecionado?.selectedDate ||
+                            diaMesSelecionado,
+                          diaSemana: pacienteSelecionado?.diaSemana || diaSemana,
+                        })
+                        : undefined
+                    )
+                  }
+                />
               </div>
+            ) : (
+              <>
+                <div className=" w-[30%] div-input-escolher-paciente">
+                  <UserSearch
+                    onUserSelect={(p) =>
+                      setPacienteSelecionado(
+                        p
+                          ? montarPacienteComPadrao(p, {
+                            horario: pacienteSelecionado?.horario || horario,
+                            selectedDate:
+                              pacienteSelecionado?.selectedDate ||
+                              diaMesSelecionado,
+                            diaSemana: pacienteSelecionado?.diaSemana || diaSemana,
+                          })
+                          : undefined
+                      )
+                    }
+                  />
+                </div>
+                <div className="paciente-info">
+                  <p>
+                    <strong>Paciente:</strong> {pacienteSelecionado.nome}
+                  </p>
+                  <p>
+                    <strong>Dia para Consultas:</strong>{" "}
+                    {getNomeDiaSemana(preferencias.diaSemana)}
+                  </p>
+                  <p>
+                    <strong>Horário para Consultas:</strong>{" "}
+                    {preferencias.horario || "Indefinido"}
+                  </p>
+                </div>
+              </>
             )}
           </div>
 
@@ -389,7 +409,7 @@ const CadastrarAgendamento = ({ paciente }) => {
               <>
                 <div className="container-inputs flex gap-2">
                   {/* Dia da semana */}
-                  <div className="select-container w-full">
+                  <div className="select-container">
                     <label htmlFor="diaSemana" className="input-label">
                       Dia da Semana
                     </label>
@@ -496,7 +516,7 @@ const CadastrarAgendamento = ({ paciente }) => {
                           <p>
                             <strong>Horário:</strong> {agendamento.hora}
                           </p>
-                          <p>
+                          <p className="status-p">
                             <strong>Status:</strong> {agendamento.statusSessao}
                           </p>
                         </div>
