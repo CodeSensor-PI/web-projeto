@@ -87,9 +87,10 @@ const CalendarCard = ({
           {timeSlot}
           {patientName && ` - ${patientName}`}
         </span>
-        <div className="agendamento-info">
-          <p>Status: {status}</p>
-        </div>
+
+      </div>
+      <div className="agendamento-info">
+        <p>Status: {status}</p>
       </div>
 
       <div className="flex justify-center gap-2 w-full">
