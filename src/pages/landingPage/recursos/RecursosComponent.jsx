@@ -44,8 +44,10 @@ const RecursosComponent = () => {
       className="div-recursos flex flex-col justify-center items-center p-12 md:p-40"
       id="recursos"
     >
-      <h1 className="titulo-section">RECURSOS AGENDFY</h1>
-      <h3 className="subtitulo-section">AGENDAMENTOS INTELIGENTES</h3>
+      <div className="header-recursos">
+        <h1 className="titulo-section">RECURSOS AGENDFY</h1>
+        <h3 className="subtitulo-section">AGENDAMENTOS INTELIGENTES</h3>
+      </div>
       <Swiper
         slidesPerView={1}
         pagination={{ clickable: true }}
