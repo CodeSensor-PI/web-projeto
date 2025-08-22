@@ -1,6 +1,6 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
-import { environment } from "../../../environments/environment";
+import { environment } from "../../environments/environment";
 
 const ProtectedRoute = ({ children }) => {
   if (environment.env !== "dev") {
