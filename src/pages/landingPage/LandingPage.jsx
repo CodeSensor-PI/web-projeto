@@ -19,21 +19,29 @@ const LandingPage = () => {
             
             <HomeComponent/>
 
-            <DivisaoComponent/>
+            <DivisaoComponent componenteSeguinte="solucao"/>
 
-            <SolucaoComponent/>
+            <section id="solucao">
+                <SolucaoComponent/>
+            </section>
 
-            <DivisaoComponent/>
+            <DivisaoComponent componenteSeguinte="nossa-essencia" cor="azul"/>
 
-            <NossaEssenciaComponent/>
+            <section id="nossa-essencia">
+                <NossaEssenciaComponent/>
+            </section>
 
-            <DivisaoComponent/>
+            <DivisaoComponent componenteSeguinte="recursos"/>
 
-            <RecursosComponent/>
+            <section id="recursos">
+                <RecursosComponent/>
+            </section>
 
-            <DivisaoComponent/>
+            <DivisaoComponent componenteSeguinte="contato" cor="azul-claro"/>
 
-            <ContatoComponent/>
+            <section id="contato">
+                <ContatoComponent/>
+            </section>
 
             <FooterComponent/>
         </div>
