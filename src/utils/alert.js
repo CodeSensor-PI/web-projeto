@@ -44,7 +44,7 @@ export async function popupMessage(planoId) {
     Swal.fire({
       title: '<span style="color: #1B66A4;">Editar Valores do Plano</span>',
       html: `
-        <label for="semana" style="display: block; text-align: left; margin-top: 10px; color: #000000;">Semanal:</label>
+        <label for="avulso" style="display: block; text-align: left; margin-top: 10px; color: #000000;">Avulso:</label>
         <input id="semana" class="swal2-input input-app" placeholder="R$ 0,00" value="${semanal}">
         <label for="mensal" style="display: block; text-align: left; margin-top: 10px; color: #000000;">Mensal:</label>
         <input id="mensal" class="swal2-input input-app" placeholder="R$ 0,00" value="${mensal}">
@@ -58,7 +58,7 @@ export async function popupMessage(planoId) {
       customClass: {
         popup: "swal-medium",
         confirmButton: "btn_primario",
-        cancelButton: "btn_secundario",
+        cancelButton: "btn_secundario-editar-plano",
       },
       didOpen: () => {
         const semanaInput = document.getElementById("semana");
