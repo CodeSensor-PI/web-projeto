@@ -1,3 +1,5 @@
+# Ignorar arquivo de ambiente local
+environments/environment.ts
 # Logs
 logs
 *.log
@@ -22,4 +24,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-environment.ts
