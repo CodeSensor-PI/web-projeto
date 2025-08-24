@@ -6,7 +6,7 @@ import InputField from '../../components/InputField/InputField';
 import SaveButton from '../../components/SaveButton/SaveButton';
 import MainComponent from '../../components/MainComponent/MainComponent';
 import { postPaciente } from '../../../../provider/api/pacientes/fetchs-pacientes';
-import { postPreferencia } from '../../../../provider/api/preferencias/fetchs-preferencias'; 
+import { postPreferencia } from '../../../../provider/api/preferencias/fetchs-preferencias';
 import { errorMessage, responseMessage } from '../../../../utils/alert';
 
 const AdicionarPaciente = () => {
@@ -24,8 +24,8 @@ const AdicionarPaciente = () => {
             return;
         }
 
-        const planoMensalEscolhido = planoMensal ? 2 : 1; 
-        const senha = "123456"; 
+        const planoMensalEscolhido = planoMensal ? 2 : 1;
+        const senha = "123456";
 
         const novoPaciente = {
             nome,
@@ -35,7 +35,7 @@ const AdicionarPaciente = () => {
             fkPlano: {
                 id: planoMensalEscolhido,
                 categoria: planoMensal ? "PLANO" : "AVULSO",
-                preco: planoMensal ? 1200 : 0, 
+                preco: planoMensal ? 1200 : 0,
             },
         };
 
@@ -87,65 +87,66 @@ const AdicionarPaciente = () => {
                     <main className='div-add-paciente'>
                         <h2>Dados Do Paciente:</h2>
                         <section>
-                            <div className='flex gap-3'>
-                                <InputField
-                                    labelTitle={'Nome'}
-                                    value={nome}
-                                    width={'w-full'}
-                                    placeholder={'Nome do paciente'}
-                                    onChange={(e) => setNome(e.target.value)}
+
+                            <InputField
+                                labelTitle={'Nome'}
+                                value={nome}
+                                width={'w-full'}
+                                containerWidth={'w-[80%]'}
+                                placeholder={'Nome do paciente'}
+                                onChange={(e) => setNome(e.target.value)}
+                                required
+                            />
+                            <InputField
+                                labelTitle={'E-mail'}
+                                type={'email'}
+                                value={email}
+                                width={'w-full'}
+                                containerWidth={'w-[80%]'}
+                                placeholder={'E-mail do paciente'}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+
+                            <div className="select-container">
+                                <label htmlFor="diaConsultas">Dia de Consultas</label>
+                                <select
+                                    id="diaConsultas"
+                                    value={diaConsultas}
+                                    className='select-field w-full'
+                                    onChange={(e) => setDiaConsultas(e.target.value)}
                                     required
-                                />
-                                <InputField
-                                    labelTitle={'E-mail'}
-                                    type={'email'}
-                                    value={email}
-                                    width={'w-full'}
-                                    placeholder={'E-mail do paciente'}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                >
+                                    <option value="" disabled>Selecione um dia</option>
+                                    <option value="SEGUNDA">Segunda-feira</option>
+                                    <option value="TERCA">Terça-feira</option>
+                                    <option value="QUARTA">Quarta-feira</option>
+                                    <option value="QUINTA">Quinta-feira</option>
+                                    <option value="SEXTA">Sexta-feira</option>
+                                </select>
+                            </div>
+                            <div className="select-container">
+                                <label htmlFor="horarioConsultas">Horário de Consultas</label>
+                                <select
+                                    id="horarioConsultas"
+                                    value={horarioConsultas}
+                                    className='select-field w-full'
+                                    onChange={(e) => setHorarioConsultas(e.target.value)}
                                     required
-                                />
+                                >
+                                    <option value="" disabled>Selecione um horário</option>
+                                    {Array.from({ length: 9 }, (_, i) => {
+                                        const hour = (8 + i).toString().padStart(2, '0');
+                                        if (hour === "12") return null;
+                                        return (
+                                            <option key={hour} value={`${hour}:00`}>
+                                                {`${hour}:00`}
+                                            </option>
+                                        );
+                                    })}
+                                </select>
                             </div>
-                            <div className='flex gap-3'>
-                                <div className="select-container">
-                                    <label htmlFor="diaConsultas">Dia de Consultas</label>
-                                    <select
-                                        id="diaConsultas"
-                                        value={diaConsultas}
-                                        className='select-field w-full'
-                                        onChange={(e) => setDiaConsultas(e.target.value)}
-                                        required
-                                    >
-                                        <option value="" disabled>Selecione um dia</option>
-                                        <option value="SEGUNDA">Segunda-feira</option>
-                                        <option value="TERCA">Terça-feira</option>
-                                        <option value="QUARTA">Quarta-feira</option>
-                                        <option value="QUINTA">Quinta-feira</option>
-                                        <option value="SEXTA">Sexta-feira</option>
-                                    </select>
-                                </div>
-                                <div className="select-container">
-                                    <label htmlFor="horarioConsultas">Horário de Consultas</label>
-                                    <select
-                                        id="horarioConsultas"
-                                        value={horarioConsultas}
-                                        className='select-field w-full'
-                                        onChange={(e) => setHorarioConsultas(e.target.value)}
-                                        required
-                                    >
-                                        <option value="" disabled>Selecione um horário</option>
-                                        {Array.from({ length: 9 }, (_, i) => {
-                                            const hour = (8 + i).toString().padStart(2, '0');
-                                            if (hour === "12") return null;
-                                            return (
-                                                <option key={hour} value={`${hour}:00`}>
-                                                    {`${hour}:00`}
-                                                </option>
-                                            );
-                                        })}
-                                    </select>
-                                </div>
-                            </div>
+
                             <CheckBox
                                 CheckboxValue={'mensal'}
                                 labelTitle={'Plano Mensal'}

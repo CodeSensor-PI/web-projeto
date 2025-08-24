@@ -10,6 +10,7 @@
     min-height: 100vh;
     background-color: var(--WhiteFy);
     overflow: hidden;
+    gap: 1em;
 }
 
 .form-cadastrar-agendamento{
@@ -20,7 +21,7 @@
     width: 100%;
     height: 100%;
     padding: 1em;
-    gap: 0.2em;
+    gap: 1em;
     border: var(--BlackFy) 2px solid;
     border-radius: 12px;
     background-color: var(--LightGrayFy);
@@ -32,23 +33,27 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-evenly;
-    background-color: var(--WhiteFy);
-    border-radius: 2em;
-    padding: 1em;
-    width: 80%;
+    border-radius: 0.5em;
+    width: 90%;
     gap: 1em;
 }
 
 .div-escolher-paciente{
-    width: 80%;
+    width: 90%;
     min-height: 10vh;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    border-radius: 0.5em;
+    gap: 1em;
+}
+
+.div-input-escolher-paciente{
     background-color: var(--WhiteFy);
-    padding: 1em;
-    border-radius: 1.5em;
+    height: 100%;
+    padding: 1em 2em;
+    border-radius: 0.5em;
 }
 
 .paciente-info{
@@ -56,9 +61,12 @@
     flex-direction: row;
     justify-content: space-between;
     gap: 1em;
+    background-color: var(--WhiteFy);
+    padding: 1em 2em;
+    border-radius: 0.5em;
     justify-content: space-between;
     align-items: center;
-    width: 100%;
+    width: 70%;
     height: 100%;
     p{
         display: flex;
@@ -81,6 +89,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    font-size: 1.3em;
 }
 
 .styled-datalist{
@@ -119,8 +128,11 @@
     flex-direction: column;
     justify-content: start;
     align-items: start;
-    width: 60%;
+    width: 70%;
     height: 100%;
+    background-color: var(--WhiteFy);
+    padding: 1em 2em;
+    border-radius: 0.5em;
     gap: 1em;
     overflow-y: auto;
 }
@@ -185,16 +197,21 @@
 .container-inputs{
     display: flex;
     flex-direction: column;
-    justify-content: start;
+    justify-content: space-between;
     align-items: center;
     gap: 1em;
+    background-color: var(--WhiteFy);
+    border-radius: 0.5em;
+    padding: 1em 2em;
+    width: 30%;
+    height: 100%;
 }
 
 .select-container {
     display: flex;
     flex-direction: column;
-    width: 200px;
     height: 100%;
+    width: 80%;
     padding: 0;
     align-items: flex-start;
     justify-content: flex-end;

@@ -136,7 +136,7 @@ const Administracao = () => {
         headerContent={
           <div className="flex w-full gap-2 items-center justify-end">
             <button className="btn_agendamento" onClick={() => popupMessage()}>
-              Preferências
+              Editar Planos
             </button>
           </div>
         }
@@ -222,7 +222,6 @@ const Administracao = () => {
                       type="password"
                     />
                   </div>
-
                   <div className="flex flex-col gap-2 w-full items-center">
                     <InputField
                       labelTitle="Nova senha"

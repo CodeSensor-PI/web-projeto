@@ -1,4 +1,4 @@
 export const environment = {
     production: false,
-    env: 'hml'
+    env: 'dev'
 }

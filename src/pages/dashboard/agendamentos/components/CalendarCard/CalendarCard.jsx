@@ -87,15 +87,16 @@ const CalendarCard = ({
           {timeSlot}
           {patientName && ` - ${patientName}`}
         </span>
+        <div className="agendamento-info">
+          <p>Status: {status}</p>
+        </div>
       </div>
-      <div className="agendamento-info">
-        <p>Status: {status}</p>
-      </div>
-      <div className="flex gap-2 w-full">
+
+
+      <div className="flex justify-center gap-2 w-full">
         <button
-          className={`btn_calendario flex rounded-full${
-            isDisabled ? " btn_calendario--disabled" : ""
-          }`}
+          className={`btn_calendario flex rounded-full${isDisabled ? " btn_calendario--disabled" : ""
+            }`}
           onClick={handleButtonClick}
           disabled={isDisabled}
         >

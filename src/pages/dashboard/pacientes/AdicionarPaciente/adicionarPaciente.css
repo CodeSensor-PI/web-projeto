@@ -9,13 +9,14 @@
     align-items: center;
     border: 2px solid #133857;
     background-color: var(--LightGrayFy);
-    border-radius: 24px;
+    border-radius: 0.5em;
     padding: 40px 96px;
 
     .div-add-paciente{
         background-color: var(--WhiteFy);
         padding: 2em;
-        border-radius: 2em;
+        border-radius: 0.5em;
+        width: 40%;
     }
 
     h2 {

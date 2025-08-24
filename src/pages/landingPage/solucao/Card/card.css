@@ -8,10 +8,21 @@
     background: linear-gradient(11deg, var(--WhiteFy) 80%, var(--LightBlueFy) 80%);
     width: 100%;
     padding: 1em;
-    border-radius: 1em;
+    border-radius: 0.5em;
     margin-bottom: 1em;
     min-height: 100%;
+    transition: ease-in-out 0.3s;
+
+    h5{
+        font-size: 1.3em;
+    }
 }
 .card-icon {
     width: 2em;
+}
+
+.card-content:hover{
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: default;
 }

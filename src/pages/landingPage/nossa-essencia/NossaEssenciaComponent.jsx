@@ -6,10 +6,17 @@ import './nossaEssencia.css'
 
 
 const NossaEssenciaComponent = () => {
+
+    const redirecionarContato = () => {
+        window.location.href = "#contato";
+    }
+
     return (
         <section className="section-nossa-essencia flex flex-col justify-between items-center p-12 md:p-40" id="essencia">
-            <h1 className="titulo-section">NOSSA ESSÊNCIA</h1>
-            <h3 className="subtitulo-section">MISSÃO, VISÃO E VALORES</h3>
+            <div className="header-nossa-essencia">
+                <h1 className="titulo-section">NOSSA ESSÊNCIA</h1>
+                <h3 className="subtitulo-section">MISSÃO, VISÃO E VALORES</h3>
+            </div>
             <div className="boxes flex flex-col md:flex-row gap-8 mt-8">
                 <div className="box-content ">
                     <img src={MissaoImg} className="w-24" alt="" />
@@ -27,7 +34,7 @@ const NossaEssenciaComponent = () => {
                     <p className="mt-2 text-sm">Prezamos pela segurança, protegendo os dados, garantindo processos simples e ágeis. e oferecendo um serviço confiável.</p>
                 </div>
             </div>
-            <button id="btn_primario" className="bg-lightBlueFy border-2 border-lightBlueFy text-white p-4 font-medium text-sm transition duration-300 ease-in-out hover:bg-darkestBlueFy mt-8">Entre em contato</button>
+            <button id="btn_primario" className="btn_primario" onClick={() => redirecionarContato()}>Entre em contato</button>
         </section>
     )
 }
