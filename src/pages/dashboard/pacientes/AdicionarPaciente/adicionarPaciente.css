@@ -12,7 +12,7 @@
     border-radius: 0.5em;
     padding: 40px 96px;
 
-    .div-add-paciente{
+    .div-add-paciente {
         background-color: var(--WhiteFy);
         padding: 2em;
         border-radius: 0.5em;
@@ -45,5 +45,27 @@
     input[type='checkbox'] {
         margin-top: 16px;
     }
+
+}
+
+
+@media (max-width: 1600px) {
+    .addPaciente {
+        .div-add-paciente {
+            width: 100%;
+
+            section {
+                /* background-color: #133857; */
+                width: 100%;
+                display: flex;
+                flex-direction: row;
+                gap: 1em;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+    }
+
+
 
 }
