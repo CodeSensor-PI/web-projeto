@@ -1,0 +1,34 @@
+.desconectado{
+    background-color: var(--WhiteFy);
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: start;
+    padding: 10vh;
+    align-items: center;
+    flex-direction: column;
+    gap: 10em;
+
+    .mensagem{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    img{
+        width: 10em;
+    }
+
+    a{  
+        background-color: var(--LightBlueFy);
+        color: var(--TrueWhiteFy);
+        padding: 0.5em 1em;
+        border-radius: 0.5em;
+        text-decoration: none;
+        transition: all 0.3s ease-in-out;
+        &:hover{
+            transform: scaleX(1.05);
+        }
+    }
+}
+
