@@ -17,10 +17,12 @@ import EditarPsicologo from "./pages/dashboard/psicologos/visualizarPsicologo/Ed
 import EsqueceuSenha from "./pages/Login/EsqueceuSenha/EsqueceuSenha";
 import ConfirmarCodigo from "./pages/Login/EsqueceuSenha/ConfirmarCodigo/ConfirmarCodigo";
 import AlterarSenha from "./pages/Login/EsqueceuSenha/AlterarSenha/AlterarSenha";
+import Desconectado from "./pages/components/Desconectado";
 
 export const routes = createBrowserRouter([
     { path: "/", element: <LandingPage /> },
     { path: "/login", element: <LoginPage /> },
+    { path: "/desconectado", element: <Desconectado /> },
     { path: "/login/esqueceu-senha", element: <EsqueceuSenha /> },
     { path: "/login/esqueceu-senha/confirmar-codigo", element: <ConfirmarCodigo /> },
     { path: "/login/esqueceu-senha/alterar-senha", element: <AlterarSenha /> },
