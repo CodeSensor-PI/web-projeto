@@ -1,5 +1,5 @@
 import './desconectado.css'
-import LogoBlue from '../../assets/images/logoBlue.svg'
+import LogoBlue from '../../../assets/images/logoBlue.svg'
 import { useEffect } from 'react'
 
 const Desconectado = () => {

@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { environment } from "../environments/environment";
+// import { environment } from "../environments/environment";
 import LandingPage from "./pages/landingPage/LandingPage";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Agendamentos from "./pages/dashboard/agendamentos/Agendamentos";
@@ -17,7 +17,8 @@ import EditarPsicologo from "./pages/dashboard/psicologos/visualizarPsicologo/Ed
 import EsqueceuSenha from "./pages/Login/EsqueceuSenha/EsqueceuSenha";
 import ConfirmarCodigo from "./pages/Login/EsqueceuSenha/ConfirmarCodigo/ConfirmarCodigo";
 import AlterarSenha from "./pages/Login/EsqueceuSenha/AlterarSenha/AlterarSenha";
-import Desconectado from "./pages/components/Desconectado";
+import Desconectado from "./pages/components/desconectado/Desconectado";
+import NotFound from "./pages/components/notFound/NotFound";
 
 export const routes = createBrowserRouter([
     { path: "/", element: <LandingPage /> },
@@ -39,5 +40,5 @@ export const routes = createBrowserRouter([
     { path: "/dashboard/psicologos", element: <ProtectedRoute><Psicologos /></ProtectedRoute> },
     { path: "/dashboard/psicologos/adicionar", element: <ProtectedRoute><AdicionarPsicologo /></ProtectedRoute> },
     { path: "/dashboard/psicologos/editar/:id", element: <ProtectedRoute><EditarPsicologo /></ProtectedRoute> },
-    { path: "*", element: <h1>Página não encontrada.</h1> }
+    { path: "*", element: <NotFound /> }
 ]);
