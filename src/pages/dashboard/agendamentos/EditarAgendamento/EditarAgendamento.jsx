@@ -16,7 +16,7 @@ import {
 } from "../../../../provider/api/agendamentos/fetchs-agendamentos.js";
 import { putAgendamento } from "../../../../provider/api/agendamentos/fetchs-agendamentos.js";
 import UserSearch from "../../components/UserSearch/UserSearch";
-import ModalRelatorio from "../../components/ModalRelatorio";
+import ModalRelatorio from "../../components/ModalCadastrarRelatorio/ModalCadastrarRelatorio.jsx";
 import { getRelatorioPorSessao } from "../../../../provider/api/agendamentos/fetchs-relatorio";
 import {
   formatDateToBackend,

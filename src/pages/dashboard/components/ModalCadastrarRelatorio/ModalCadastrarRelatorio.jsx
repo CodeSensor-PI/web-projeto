@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./Modal.css";
-import { ajustarDataParaPTBR } from "../../../utils/ajustarData";
-import { getRelatorioPorSessao } from "../../../provider/api/agendamentos/fetchs-relatorio";
+import { ajustarDataParaPTBR } from "../../../../utils/ajustarData";
+import { getRelatorioPorSessao } from "../../../../provider/api/agendamentos/fetchs-relatorio";
 
 const ModalRelatorio = ({ onClose, onSave, paciente, idSessao, relatorioExistente }) => {
     const [relatorio, setRelatorio] = useState("");

@@ -7,7 +7,7 @@ import CheckBox from "../../components/Checkbox/Checkbox";
 import InputField from "../../components/InputField/InputField";
 import SaveButton from "../../components/SaveButton/SaveButton";
 import MainComponent from "../../components/MainComponent/MainComponent";
-import { FaUserEdit, FaUser } from "react-icons/fa";
+import { FaUserEdit, FaUser, FaFileArchive } from "react-icons/fa";
 import {
   putDesativarPaciente,
   putPaciente,
@@ -26,8 +26,12 @@ import {
 import { getEnderecoPorCep } from "../../../../provider/api/pacientes/fetchs-pacientes";
 import Loading from "../../components/Loading/Loading";
 import EditButton from "../../components/EditButton/EditButton";
+import { FaFileArrowUp } from "react-icons/fa6";
+import ModalRelatorios from "../../components/ModalRelatorios/ModalRelatorios";
+
 
 const EditarPaciente = () => {
+  const [showModalRelatorio, setShowModalRelatorio] = useState(false);
   const { id } = useParams();
   const [paciente, setPaciente] = React.useState({
     fkEndereco: {},
@@ -41,6 +45,7 @@ const EditarPaciente = () => {
   const [erro, setErro] = useState('');
   const [loading, setLoading] = useState(true); 
   const [telefone, setTelefone] = useState({});
+  // Removido: loadingRelatorio, relatorioExistente
 
   const diasSemana = [
     "Segunda-feira",
@@ -307,6 +312,20 @@ const EditarPaciente = () => {
                 disabled={!isEditingGeneral}
                 onChange={(e) => setIsAtivo(e.target.checked)}
               />
+              <button
+                type="button"
+                className="btn_primario rounded-full flex gap-2"
+                onClick={() => setShowModalRelatorio(true)}
+              >
+                <FaFileArrowUp className="" size={20} />
+                Ver Relatórios
+              </button>
+              {showModalRelatorio && (
+                <ModalRelatorios
+                  pacienteId={paciente.id || 1}
+                  onClose={() => setShowModalRelatorio(false)}
+                />
+              )}
             </div>
 
             <section className="fields">
