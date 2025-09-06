@@ -161,6 +161,7 @@ const Administracao = () => {
                     labelTitle="Nome"
                     value={nome}
                     width={"w-full"}
+                    containerWidth={"w-[90%]"}
                     disabled={!isEditingGeneral}
                     onChange={(e) => setNome(e.target.value)}
                   />
@@ -168,6 +169,7 @@ const Administracao = () => {
                     labelTitle="E-mail"
                     value={email}
                     width={"w-full"}
+                    containerWidth={"w-[90%]"}
                     type="email"
                     disabled={!isEditingGeneral}
                     onChange={(e) => setEmail(e.target.value)}
@@ -176,6 +178,7 @@ const Administracao = () => {
                     labelTitle="Telefone"
                     value={telefone}
                     width={"w-full"}
+                    containerWidth={"w-[90%]"}
                     disabled={!isEditingGeneral}
                     onChange={(e) =>
                       setTelefone(formatTelefone(removeMask(e.target.value)))
@@ -186,6 +189,7 @@ const Administracao = () => {
                     value={crp}
                     disabled={true}
                     width={"w-full"}
+                    containerWidth={"w-[90%]"}
                     maskType={"crp"}
                   />
                 </div>
@@ -212,21 +216,22 @@ const Administracao = () => {
                   />
                 </h2>
                 <div className="card-inputs">
-                  <div className="flex flex-col gap-2 w-full items-center">
+                  
                     <InputField
                       labelTitle="Senha Atual"
                       value={senha}
                       disabled={!isEditingPassword}
                       width={"w-full"}
+                      containerWidth={"w-[90%]"}
                       onChange={(e) => setSenha(e.target.value)}
                       type="password"
                     />
-                  </div>
-                  <div className="flex flex-col gap-2 w-full items-center">
+
                     <InputField
                       labelTitle="Nova senha"
                       value={novaSenha}
                       width={"w-full"}
+                      containerWidth={"w-[90%]"}
                       disabled={!isEditingPassword}
                       onChange={(e) => setNovaSenha(e.target.value)}
                       type="password"
@@ -235,11 +240,12 @@ const Administracao = () => {
                       labelTitle="Confirmar senha"
                       value={confirmarSenha}
                       width={"w-full"}
+                      containerWidth={"w-[90%]"}
                       disabled={!isEditingPassword}
                       onChange={(e) => setConfirmarSenha(e.target.value)}
                       type="password"
                     />
-                  </div>
+                   
                 </div>
                 <div className="inputs-button">
                   <SaveButton
