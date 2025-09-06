@@ -3,8 +3,9 @@ import { Navigate } from "react-router-dom";
 import { environment } from "../../environments/environment";
 
 const ProtectedRoute = ({ children }) => {
-  if (environment.env !== "dev") {
-    // Redireciona para login se não for ambiente dev
+  const isAuthenticated = () => !!localStorage.getItem("authToken");
+
+  if (environment.env !== "dev" && !isAuthenticated()) {
     return <Navigate to="/login" replace />;
   }
   return children;
