@@ -62,8 +62,9 @@
     background-color: var(--TrueWhiteFy);
     border-radius: 1em;
     padding: 1em;
-    width: 30vw;
-    height: 100%;
+    margin-top: 1.7rem;
+    width: 25vw;
+    height: 90%;
 }
 
 .editar-conta h2 {
@@ -107,9 +108,11 @@
     flex-direction: column;
     flex-wrap: wrap;
     width: 100%;
-    justify-content: center;
+    justify-content: space-between;
+    height: 50%;
     align-content: center;
     gap: 1em;
+    
 
     div{
         flex-wrap: wrap;
