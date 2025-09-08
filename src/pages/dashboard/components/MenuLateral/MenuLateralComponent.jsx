@@ -170,7 +170,7 @@ const MenuLateralComponent = () => {
         onClick={() => {
           localStorage.clear();
           sessionStorage.clear();
-          window.location.href = "/";
+          window.location.href = "/desconectado";
         }}
       >
         <svg

@@ -17,7 +17,7 @@ const SolucaoComponent = () => {
     {
       id: 2,
       icon: CardIcon2,
-      text: "Aumente a produtividade de seus serviços utilizando a nossa solução.",
+      text: "Aumente a produtividade de suas consultas utilizando a nossa solução.",
     },
   ];
 
@@ -25,7 +25,7 @@ const SolucaoComponent = () => {
     {
       id: 3,
       icon: CardIcon3,
-      text: "Tenha mais eficiência nos atendimentos aos seus clientes.",
+      text: "Tenha mais eficiência nos atendimentos aos seus pacientes.",
     },
     {
       id: 4,

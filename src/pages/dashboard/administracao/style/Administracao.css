@@ -45,12 +45,41 @@
     height: 100%;
 }
 
+
 .forms-container {
-    display: flex;
-    justify-content: space-between;
-    gap: 10em;
-    width: 100%;
-    height: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 2em;
+        width: 100%;
+        height: 100%;
+}
+
+@media (max-width: 900px) {
+    .forms-container {
+        flex-direction: column !important;
+        align-items: center;
+        gap: 2em;
+    }
+    .editar-conta {
+        width: 90vw;
+        min-width: 260px;
+        max-width: 500px;
+        margin-top: 1em;
+        height: auto;
+    }
+}
+
+@media (max-width: 600px) {
+    .forms-container {
+        gap: 1em;
+    }
+    .editar-conta {
+        width: 98vw;
+        min-width: 180px;
+        max-width: 100vw;
+        padding: 0.5em;
+    }
 }
 
 .editar-conta {
@@ -58,12 +87,15 @@
     flex-direction: column;
     flex: 1;
     justify-content: space-between;
-    /* gap: 16px; */
     background-color: var(--TrueWhiteFy);
     border-radius: 1em;
     padding: 1em;
-    width: 30vw;
-    height: 100%;
+    margin-top: 1.7rem;
+    width: 25vw;
+    min-width: 320px;
+    max-width: 400px;
+    height: 90%;
+    box-sizing: border-box;
 }
 
 .editar-conta h2 {
@@ -107,16 +139,26 @@
     flex-direction: column;
     flex-wrap: wrap;
     width: 100%;
-    justify-content: center;
+    justify-content: space-between;
     align-content: center;
     gap: 1em;
+}
 
-    div{
-        flex-wrap: wrap;
-        display: flex;
-        justify-content: center;
-    }
+/* Garante que os inputs ocupem 100% da largura do card */
+.card-inputs .w-full,
+.card-inputs input,
+.card-inputs .input-field {
+    width: 100% !important;
+    min-width: 0;
+    box-sizing: border-box;
+}
 
+/* Ajusta o container dos inputs para responsividade */
+.card-inputs > div {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .inputs-button {

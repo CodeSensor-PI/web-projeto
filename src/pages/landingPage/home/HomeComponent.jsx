@@ -16,10 +16,10 @@ const HomeComponent = () => {
     >
       <div className="text-home text-center md:text-left">
         <h1 className="text-4xl font-bold">
-          Gerencie a agenda de sua empresa conosco!
+          Gerencie a agenda de sua clínica conosco!
         </h1>
         <p className="mt-4 text-lg">
-          Aumente a eficiência de seu negócio com a nossa tecnologia em
+          Aumente a eficiência de sua clínica com a nossa tecnologia em
           gerenciamento de agendamentos.
         </p>
         <div className="div-buttons flex gap-4 mt-4">
