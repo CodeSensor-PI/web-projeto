@@ -2,30 +2,69 @@ import React, { useState, useEffect } from "react";
 import "./Modal.css";
 import { ajustarDataParaPTBR } from "../../../../utils/ajustarData";
 import { getRelatorioPorSessao } from "../../../../provider/api/agendamentos/fetchs-relatorio";
+import { postCriarRelatorio } from "../../../../provider/api/relatorios/fetchs-relatorios";
+import { deleteRelatorio } from "../../../../provider/api/relatorios/fetchs-relatorios";
+import { FaTrashCan } from "react-icons/fa6";
+import { IoTrashBinOutline } from "react-icons/io5";
+
 
 const ModalRelatorio = ({ onClose, onSave, paciente, idSessao, relatorioExistente }) => {
     const [relatorio, setRelatorio] = useState("");
+    const [relatorioExistenteLocal, setRelatorioExistenteLocal] = useState(null);
 
-    const handleSave = () => {
+    const handleSave = async () => {
         const relatorioCompleto = {
-            paciente: {
-                id: paciente.id,
-                nome: paciente.nome,
-                cpf: paciente.cpf,
-                email: paciente.email,
-                status: paciente.status,
-                plano: paciente.fkPlano,
-            },
-            agenda: {
-                data: paciente.data,
-                horario: paciente.horario,
-                // adicione outros campos relevantes da agenda se necessário
-            },
-            relatorio: relatorio
+            conteudo: relatorio,
+            data: "2025-09-14T18:45:00", // ou use new Date().toISOString() se quiser a data atual
+            fkPaciente: paciente.id,
+            fkSessao: idSessao
         };
-        onSave(relatorioCompleto);
-        setRelatorio("");
+
+        try {
+            const resultado = await postCriarRelatorio(relatorioCompleto);
+            console.log("Relatório criado com sucesso:", resultado);
+            onSave(resultado); // atualiza o estado no componente pai, se necessário
+            setRelatorio("");
+            onClose(); // fecha o modal
+        } catch (error) {
+            console.error("Erro ao salvar relatório:", error);
+            alert("Não foi possível salvar o relatório. Tente novamente.");
+        }
     };
+
+    useEffect(() => {
+        const buscarRelatorio = async () => {
+            try {
+                const resultado = await getRelatorioPorSessao(idSessao);
+                if (resultado && resultado.conteudo) {
+                    setRelatorioExistenteLocal(resultado);
+                    console.log("Relatório existente encontrado:", resultado);
+                }
+            } catch (error) {
+                console.warn("Nenhum relatório encontrado para esta sessão.");
+            }
+        };
+
+        if (idSessao) {
+            buscarRelatorio();
+        }
+    }, [idSessao]);
+
+
+    const handleDelete = async () => {
+        const confirmar = window.confirm("Tem certeza que deseja excluir este relatório?");
+        if (!confirmar || !relatorioExistenteLocal.id) console.log(relatorioExistente.id);
+
+        try {
+            await deleteRelatorio(relatorioExistenteLocal.id);
+            setRelatorioExistenteLocal(null); // limpa o estado
+            alert("Relatório excluído com sucesso.");
+        } catch (error) {
+            alert("Erro ao excluir relatório. Tente novamente.");
+        }
+    };
+
+
 
     // Função para fechar ao clicar fora do modal
     const handleOverlayClick = (e) => {
@@ -48,10 +87,18 @@ const ModalRelatorio = ({ onClose, onSave, paciente, idSessao, relatorioExistent
                         </div>
                     )}
                 </div>
-                {relatorioExistente ? (
-                    <div style={{ background: '#e0e7ff', color: '#3730a3', padding: '1em', borderRadius: '8px', marginBottom: '1em' }}>
-                        <strong>Relatório já registrado para esta sessão:</strong>
-                        <div style={{ marginTop: '0.5em' }}>{relatorioExistente}</div>
+                {relatorioExistenteLocal ? (
+                    <div className="flex gap-2 justify-between" style={{ background: '#e0e7ff', color: '#3730a3', padding: '1em', borderRadius: '8px', marginBottom: '1em' }}>
+                        <div className="flex flex-col gap-2">
+                            <strong>Relatório já registrado para esta sessão:</strong>
+                            <div style={{ marginTop: '0.5em' }}>{relatorioExistenteLocal.conteudo}</div>
+                        </div>
+                        <button
+                            className="btn_deletar"
+                            onClick={handleDelete}
+                        >
+                            <IoTrashBinOutline size={24} />
+                        </button>
                     </div>
                 ) : (
                     <>

@@ -41,4 +41,14 @@
   cursor: pointer;
 }
 
+.btn_deletar{
+  color: white;
+	border: none;
+	border-radius: 16px;
+	padding: 5px 10px;
+  background-color: var(--RedAlertFy);
+	font-size: 12px;
+	cursor: pointer;
+	transition: background-color 0.3s;
+}
 
