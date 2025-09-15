@@ -56,6 +56,12 @@ export default defineConfig({
         secure: false,
         rewrite: (path) => path.replace(/^\/telefones/, "/telefones"),
       },
+      "/relatorios": {
+        target: "http://localhost:8081/",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/relatorios/, "/relatorios"),
+      },
     },
   },
 });

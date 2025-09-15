@@ -37,6 +37,7 @@ const EditarPaciente = () => {
     fkEndereco: {},
     diaConsulta: "",
     horaConsulta: "",
+    id: id,
   });
   const [isEditingGeneral, setIsEditingGeneral] = useState(false);
   const [isAtivo, setIsAtivo] = useState(false);
@@ -322,7 +323,7 @@ const EditarPaciente = () => {
               </button>
               {showModalRelatorio && (
                 <ModalRelatorios
-                  pacienteId={paciente.id || 1}
+                  pacienteId={paciente.id}
                   onClose={() => setShowModalRelatorio(false)}
                 />
               )}

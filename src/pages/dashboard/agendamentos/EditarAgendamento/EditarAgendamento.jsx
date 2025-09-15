@@ -79,8 +79,8 @@ const EditarAgendamento = () => {
           // Buscar relatório existente para a sessão
           setLoadingRelatorio(true);
           const relatorio = await getRelatorioPorSessao(response.id);
-          if (relatorio && relatorio.mensagem) {
-            setRelatorioExistente(relatorio.mensagem);
+          if (relatorio && relatorio.conteudo) {
+            setRelatorioExistente(relatorio.conteudo);
           } else {
             setRelatorioExistente(null);
           }
