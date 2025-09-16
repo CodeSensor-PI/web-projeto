@@ -5,6 +5,8 @@ import AgendaDiaComponent from "./components/AgendaDiaComponent/AgendaDiaCompone
 import GraficoComponent from "./components/GraficoComponent/GraficoComponent";
 import MainComponent from "./components/MainComponent/MainComponent";
 import "./dashboard.css";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
 import {
   getKpiQtdSessaoCanceladas,
   getKpiPorcentPacienteInativos,
@@ -43,13 +45,15 @@ function formatAnoSemana(anoSemana) {
 
 const Dashboard = () => {
   const [loadingKpi, setLoadingKpi] = useState(true);
-  const [loadingDia, setLoadingDia] = useState(true);
+  const [loadingDia, setLoadingDia] = useState(false);
   const [kpiData, setKpiData] = useState([]);
   const [showPacientes, setShowPacientes] = useState(true);
   const [pacientes, setPacientes] = useState([]);
   const [qtdSessaoCancelada, setQtdSessaoCancelada] = useState(0);
   const [qtdPacientesInativos, setQtdPacientesInativos] = useState(0);
   const [error, setError] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [showCalendar, setShowCalendar] = useState(true); // controla exibição do calendário ou sessões do dia
 
   // Carrega KPIs de cancelamentos e inativos
   useEffect(() => {
@@ -97,28 +101,38 @@ const Dashboard = () => {
     fetchKpi();
   }, []);
 
-  // Carrega pacientes do dia
-  useEffect(() => {
-    async function fetchPacientesDia() {
-      setLoadingDia(true);
-      try {
-        const data = await getSessoesDia();
+  async function fetchSessoesPorData(date) {
+    setLoadingDia(true);
+    setPacientes([]);
+    setError(null);
+    try {
+      const yyyyMMdd = date.toISOString().slice(0, 10);
+      const response = await fetch(
+        `http://localhost:8080/sessoes/dia?data=${yyyyMMdd}`
+      );
+      if (response.status === 204) {
+        setPacientes([]);
+      } else if (response.ok) {
+        const data = await response.json();
         const pacientesFormatados = data.map((sessao) => ({
           id: sessao.idSessao,
           nome: sessao.nomePaciente,
-          horario: sessao.hora?.slice(0, 5),
+          horario: sessao.hora ? sessao.hora.slice(0, 5) : "",
           status: sessao.status,
+          data: sessao.data,
         }));
         setPacientes(pacientesFormatados);
-      } catch (e) {
+      } else {
+        setError("Erro ao buscar sessões do dia");
         setPacientes([]);
       }
-      setLoadingDia(false);
+    } catch (e) {
+      setError("Erro ao buscar sessões do dia");
+      setPacientes([]);
     }
-    fetchPacientesDia();
-  }, []);
+    setLoadingDia(false);
+  }
 
-  // Monta array de KPIs extras
   const kpisExtras = [
     {
       id: 2,
@@ -134,7 +148,6 @@ const Dashboard = () => {
     },
   ];
 
-  // Valor e cor da KPI principal
   const kpiPrincipalValor = kpiData[0]
     ? showPacientes
       ? kpiData[0].pacientesAgendados
@@ -201,26 +214,51 @@ const Dashboard = () => {
           </div>
           <div className="second-section flex gap-2">
             <div className="agendas-section w-1/2 flex flex-col items-center">
-              <h1 className="font-bold text-xl">
-                Pacientes do Dia ({new Date().toLocaleDateString("pt-BR")})
-              </h1>
-              <div className="agendas-diario">
-                {loadingDia ? (
-                  <p>Carregando...</p>
-                ) : pacientes.length === 0 ? (
-                  <p>Nenhum paciente agendado para hoje.</p>
-                ) : (
-                  pacientes.map((paciente) => (
-                    <AgendaDiaComponent
-                      key={paciente.id}
-                      nome={paciente.nome}
-                      horario={paciente.horario}
-                      status={paciente.status}
-                      id={paciente.id}
+              {/* Mostra calendário ou sessões do dia */}
+              {showCalendar ? (
+                <>
+                  <h1 className="font-bold text-xl mb-4">Calendário</h1>
+                  <div className="agendas-diario">
+                    <Calendar
+                      onChange={(date) => {
+                        setSelectedDate(date);
+                        setShowCalendar(false);
+                        fetchSessoesPorData(date);
+                      }}
+                      value={selectedDate}
                     />
-                  ))
-                )}
-              </div>
+                  </div>
+                </>
+              ) : (
+                <div className="pacientes-dia mt-4 w-full">
+                  <button
+                    className="mb-4 px-4 py-2 bg-blue-500 text-white rounded"
+                    onClick={() => setShowCalendar(true)}
+                  >
+                    Voltar para o calendário
+                  </button>
+                  <h2 className="font-bold text-lg mb-2">
+                    Sessões do dia {selectedDate.toLocaleDateString("pt-BR")}
+                  </h2>
+                  {loadingDia ? (
+                    <p>Carregando...</p>
+                  ) : error ? (
+                    <p className="text-red-500">{error}</p>
+                  ) : pacientes.length === 0 ? (
+                    <p>Nenhuma sessão agendada para este dia.</p>
+                  ) : (
+                    pacientes.map((paciente) => (
+                      <AgendaDiaComponent
+                        key={paciente.id}
+                        nome={paciente.nome}
+                        horario={paciente.horario}
+                        status={paciente.status}
+                        id={paciente.id}
+                      />
+                    ))
+                  )}
+                </div>
+              )}
             </div>
             <div className="grafico-section w-1/2 flex flex-col items-center bg-amber-300">
               <h1 className="font-bold text-xl">Gráfico de Agendamentos</h1>
