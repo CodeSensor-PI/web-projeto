@@ -179,3 +179,28 @@ export function confirmCancelEdit(titulo, message, size = "small") {
     backdrop: false,
   });
 }
+
+// Confirmação padronizada (genérica) com botões do tema
+export function confirmAction({
+  title,
+  message,
+  confirmText = "Confirmar",
+  cancelText = "Cancelar",
+  size = "small",
+  icon = "question",
+} = {}) {
+  return Swal.fire({
+    title,
+    text: message,
+    icon,
+    showCancelButton: true,
+    confirmButtonText: confirmText,
+    cancelButtonText: cancelText,
+    customClass: {
+      popup: `swal-${size}`,
+      confirmButton: "btn_primario",
+      cancelButton: "btn_secundario",
+    },
+    backdrop: false,
+  });
+}

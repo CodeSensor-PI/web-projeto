@@ -41,14 +41,45 @@
   cursor: pointer;
 }
 
+.cardModal{
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1em;
+  margin-bottom: 1em;
+  display: flex;
+
+}
+
 .btn_deletar{
-  color: white;
+  color: var(--RedAlertFy);
 	border: none;
 	border-radius: 16px;
-	padding: 5px 10px;
-  background-color: var(--RedAlertFy);
+	padding: 1em;
+  background-color: var(--TrueWhiteFy);
 	font-size: 12px;
 	cursor: pointer;
 	transition: background-color 0.3s;
+
+  &:hover {
+    color: var(--TrueWhiteFy);
+    background-color: var(--RedAlertFy);
+  }
+}
+
+.btn_editar{
+  color: var(--LightBlueFy);
+  /* border: 1px solid var(--DarkBlueFy); */
+  border-radius: 16px;
+  padding: 1em;
+  background-color: var(--TrueWhiteFy);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn_editar:hover{
+  color: var(--TrueWhiteFy);
+  background-color: var(--DarkBlueFy);
 }
 
