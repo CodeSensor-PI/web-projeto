@@ -31,6 +31,13 @@
   }
 }
 
+/* Área rolável para listas volumosas dentro do modal */
+.modal-list {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 8px; /* espaço para a barra de rolagem */
+}
+
 .modal-close {
   position: absolute;
   top: 1rem;

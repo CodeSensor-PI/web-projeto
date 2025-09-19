@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import "../ModalCadastrarRelatorio/Modal.css";
 import { FaDownload } from "react-icons/fa";
-import { getRelatorioPorPaciente, putAtualizarRelatorio } from "../../../../provider/api/relatorios/fetchs-relatorios";
+import { getRelatorioPorPaciente, putAtualizarRelatorio, downloadRelatoriosPdf } from "../../../../provider/api/relatorios/fetchs-relatorios";
 import { deleteRelatorio } from "../../../../provider/api/relatorios/fetchs-relatorios";
 import { IoTrashBinOutline } from "react-icons/io5";
 import { FaPen } from "react-icons/fa6";
@@ -14,6 +14,7 @@ const ModalRelatorios = ({ onClose, pacienteId }) => {
     const [loading, setLoading] = useState(true);
     const [editandoId, setEditandoId] = useState(null);
     const [textoEdicao, setTextoEdicao] = useState("");
+    const [exportando, setExportando] = useState(false);
 
     useEffect(() => {
         setLoading(true);
@@ -92,6 +93,18 @@ const ModalRelatorios = ({ onClose, pacienteId }) => {
         }
     };
 
+    const handleExport = async () => {
+        try {
+            setExportando(true);
+            await downloadRelatoriosPdf(pacienteId);
+            responseMessage("PDF gerado com sucesso. Verifique seus downloads.");
+        } catch (error) {
+            errorMessage("Não foi possível exportar o PDF. Tente novamente.");
+        } finally {
+            setExportando(false);
+        }
+    };
+
 
     return (
         <div className="modal-overlay" onClick={e => { if (e.target.classList.contains('modal-overlay')) onClose(); }}>
@@ -104,6 +117,7 @@ const ModalRelatorios = ({ onClose, pacienteId }) => {
                     <div style={{ marginTop: '1em' }}>Nenhum relatório encontrado para este paciente.</div>
                 ) : (
                     <>
+                        <div className="modal-list">
                         <ul style={{ marginTop: '1em', padding: 0, listStyle: 'none' }}>
                             {relatorios.map((rel) => {
 
@@ -156,9 +170,10 @@ const ModalRelatorios = ({ onClose, pacienteId }) => {
                                 );
                             })}
                         </ul>
-                        <button type="button" className="btn_primario flex">
+                        </div>
+                        <button type="button" className="btn_primario flex" onClick={handleExport} disabled={exportando}>
                             <FaDownload />
-                            Exportar Relatórios
+                            {exportando ? "Exportando..." : "Exportar Relatórios"}
                         </button>
                     </>
                 )}
