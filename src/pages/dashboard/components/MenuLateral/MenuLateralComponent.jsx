@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./MenuLateral.css";
+import "./menulateral.css";
 import Logo from "../../../../assets/images/icons/Logo.svg";
 import { Link, useLocation } from "react-router-dom";
 

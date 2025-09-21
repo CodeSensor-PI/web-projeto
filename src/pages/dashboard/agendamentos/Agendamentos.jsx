@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import './Agendamentos.css';
+import './agendamentos.css';
 import MenuLateralComponent from '../components/MenuLateral/MenuLateralComponent';
 import MainComponent from '../components/MainComponent/MainComponent';
 import { FaPlus } from 'react-icons/fa';

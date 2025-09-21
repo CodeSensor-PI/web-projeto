@@ -1,5 +1,5 @@
 import React from "react";
-import "./KPIsComponent.css";
+import "./KpisComponent.css";
 
 const KPIsComponent = ({ valor, texto, cor }) => {
   return (
