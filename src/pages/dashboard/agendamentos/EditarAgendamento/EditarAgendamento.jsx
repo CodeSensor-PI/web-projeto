@@ -3,7 +3,7 @@ import MainComponent from "../../components/MainComponent/MainComponent";
 import MenuLateralComponent from "../../components/MenuLateral/MenuLateralComponent";
 import "./EditarAgendamento.css";
 import { FaTrashCan } from "react-icons/fa6";
-import { FaRegSave, FaSave } from "react-icons/fa";
+import { FaRegSave, FaSave, FaFileAlt } from "react-icons/fa";
 import {
   confirmCancelEdit,
   errorMessage,
@@ -20,6 +20,7 @@ import {
   formatDateToBackend,
   formatDateToFrontend,
 } from "../../../../utils/agendamentoUtils";
+import ModalCadastrarRelatorio from "../../components/ModalCadastrarRelatorio/ModalCadastrarRelatorio";
 
 const EditarAgendamento = () => {
   const [paciente, setPaciente] = useState([]);
@@ -29,6 +30,11 @@ const EditarAgendamento = () => {
   const [diaSemana, setDiaSemana] = useState(0);
   const [novoHorario, setNovoHorario] = useState("");
   const [novoPacienteSelecionado, setNovoPacienteSelecionado] = useState(null);
+  
+  // Modal states
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [relatorios, setRelatorios] = useState([]);
+  const [hasReport, setHasReport] = useState(false);
 
   const { id } = useParams();
 
@@ -219,6 +225,36 @@ const EditarAgendamento = () => {
     }
   };
 
+  // Modal handlers
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleReportSaved = (report) => {
+    // Update the reports list and hasReport status
+    const updatedReports = [...relatorios];
+    const existingIndex = updatedReports.findIndex(r => r.id === report.id);
+    
+    if (existingIndex >= 0) {
+      updatedReports[existingIndex] = report;
+    } else {
+      updatedReports.push(report);
+    }
+    
+    setRelatorios(updatedReports);
+    setHasReport(updatedReports.length > 0);
+  };
+
+  const handleReportDeleted = (reportId) => {
+    const updatedReports = relatorios.filter(r => r.id !== reportId);
+    setRelatorios(updatedReports);
+    setHasReport(updatedReports.length > 0);
+  };
+
   console.log("Horário selecionado:", paciente.horario);
 
   return (
@@ -285,6 +321,11 @@ const EditarAgendamento = () => {
                   >
                     {agendamento.statusSessao}
                   </span>
+                  {agendamento.statusSessao === "CONCLUIDA" && (
+                    <span className={`status ml-2 ${hasReport ? "status-sessao-ok" : "status-sessao-pendente"}`}>
+                      Relatório: {hasReport ? "Disponível" : "Não disponível"}
+                    </span>
+                  )}
                 </div>
               </div>
             )}
@@ -348,9 +389,8 @@ const EditarAgendamento = () => {
                       Selecione uma data
                     </option>
                     {paciente &&
-                      diasDoMes.diaMes &&
-                      diasDoMes.diaMes.map((data, index) => (
-                        <option key={index} value={data}>
+                      Object.keys(diasDoMes).map((data) => (
+                        <option key={data} value={data}>
                           {data}
                         </option>
                       ))}
@@ -374,9 +414,8 @@ const EditarAgendamento = () => {
                     </option>
                     {Array.from({ length: 9 }, (_, i) => {
                       const hour = (8 + i).toString().padStart(2, "0");
-                      if (hour === "12") return null;
                       return (
-                        <option key={hour} value={`${hour}:00`}>
+                        <option key={hour} value={`${hour}:00:00`}>
                           {`${hour}:00`}
                         </option>
                       );
@@ -441,6 +480,16 @@ const EditarAgendamento = () => {
                 Salvar Alterações
               </button>
             )}
+            {agendamento.statusSessao === "CONCLUIDA" && (
+              <button
+                type="button"
+                className="btn_primario rounded-full flex gap-2"
+                onClick={handleOpenModal}
+              >
+                <FaFileAlt className="" size={20} />
+                Gerenciar Relatórios
+              </button>
+            )}
             <button
               className="btn_secundario rounded-full"
               onClick={() => (window.location.href = "/dashboard/agendamentos")}
@@ -451,6 +500,16 @@ const EditarAgendamento = () => {
           </div>
         </form>
       </MainComponent>
+
+      {/* Report Management Modal */}
+      <ModalCadastrarRelatorio
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        agendamentoId={agendamento.id}
+        existingReports={relatorios}
+        onReportSaved={handleReportSaved}
+        onReportDeleted={handleReportDeleted}
+      />
     </>
   );
 };
