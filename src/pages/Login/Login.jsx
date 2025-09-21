@@ -24,34 +24,30 @@ const LoginPage = () => {
           headers: {
             "Content-Type": "application/json",
           },
+          withCredentials: true,
         }
       );
 
-      const { id, nome, token, role } = response.data;
+      const { id, nome, role } = response.data;
 
       const toCapitalize = (str) => {
         return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
       };
       const nomeFormatado = toCapitalize(nome);
 
-      if (token) {
-        localStorage.setItem("authToken", token);
-        localStorage.setItem("nomeUsuario", nomeFormatado);
-        localStorage.setItem("idUsuario", id);
-        localStorage.setItem("roleUsuario", role.role);
+      localStorage.setItem("nomeUsuario", nomeFormatado);
+      localStorage.setItem("idUsuario", id);
+      localStorage.setItem("roleUsuario", role.role);
 
-        responseMessage(`Bem vindo, ${nomeFormatado}!`);
+      responseMessage(`Bem vindo, ${nomeFormatado}!`);
 
-        setTimeout(() => {
-          if (role.id === 1) {
-            window.location.href = "/dashboard/psicologos";
-          } else if (role.id === 3) {
-            window.location.href = "/dashboard";
-          }
-        }, 2300);
-      } else {
-        errorMessage("Usuário ou senha inválidos");
-      }
+      setTimeout(() => {
+        if (role.id === 1) {
+          window.location.href = "/dashboard/psicologos";
+        } else if (role.id === 3) {
+          window.location.href = "/dashboard";
+        }
+      }, 2300);
     } catch (error) {
       errorMessage("Usuário ou senha inválidos");
       console.error("Erro ao autenticar usuário:", error);
