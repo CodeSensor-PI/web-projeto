@@ -39,6 +39,20 @@
     padding-left: 1em;
 }
 
+.input-pesquisa-select{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background-color: var(--WhiteFy);
+    caret-color: var(--BlackFy);
+    border-radius: 1em;
+    border: 2px solid var(--DarkBlueFy);
+    color: var(--DarkBlueFy);
+    padding-left: 1em;
+}
+
 .search-container{
     display: flex;
     flex-direction: row;

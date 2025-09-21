@@ -1,8 +1,11 @@
 import axios from "axios";
 
-export const getPacientes = async () => {
+// Lista paginada de pacientes
+export const getPacientes = async (page = 1, size = 10) => {
   try {
-    const response = await axios.get("/pacientes", {
+    // Backend (Spring) normalmente usa paginação base 0; mapeamos UI (1-based) -> API (0-based)
+    const pageApi = Math.max(0, parseInt(page, 10) - 1 || 0);
+    const response = await axios.get(`/pacientes?page=${pageApi}&size=${size}`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -13,6 +16,9 @@ export const getPacientes = async () => {
     throw error;
   }
 };
+
+// Alias semântico caso queira diferenciar na chamada
+export const getPacientesPaginado = getPacientes;
 
 export const getPacientesPorId = async (id) => {
   try {
@@ -28,16 +34,17 @@ export const getPacientesPorId = async (id) => {
   }
 };
 
+// Busca por nome (novo endpoint dedicado: /pacientes/busca?nome=)
 export const getPacientesLista = async (pesquisar) => {
   try {
-    const response = await axios.get(`/pacientes?nome=${pesquisar}`, {
+    const response = await axios.get(`/pacientes/busca?nome=${encodeURIComponent(pesquisar)}`, {
       headers: {
         "Content-Type": "application/json",
       },
     });
     return response.data;
   } catch (error) {
-    console.error("Erro ao encontrar pacientes:", error);
+    console.error("Erro ao buscar pacientes por nome:", error);
     throw error;
   }
 };

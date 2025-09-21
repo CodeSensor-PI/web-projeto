@@ -3,7 +3,7 @@ import InputField from "../InputField/InputField";
 import { FaUser } from "react-icons/fa";
 import { errorMessage } from "../../../../utils/alert";
 import axios from "axios";
-import { getPacientes } from "../../../../provider/api/pacientes/fetchs-pacientes";
+import { getPacientes, getPacientesLista } from "../../../../provider/api/pacientes/fetchs-pacientes";
 
 const UserSearch = ({
     onUserSelect,
@@ -22,9 +22,11 @@ const UserSearch = ({
     useEffect(() => {
         const fetchPacientes = async () => {
             try {
-                const data = await getPacientes(); // Chama a função de busca de pacientes
-                setTodosPacientes(data);
-                setPacientes(data); // Atualiza o estado com os pacientes retornados
+                // Pré-carrega uma primeira página com 50 itens para sugestões iniciais
+                const data = await getPacientes(1, 50);
+                const lista = Array.isArray(data) ? data : Array.isArray(data?.content) ? data.content : [];
+                setTodosPacientes(lista);
+                setPacientes(lista);
             } catch (error) {
                 console.error("Erro ao buscar usuários:", error);
             }
@@ -33,10 +35,9 @@ const UserSearch = ({
         fetchPacientes();
     }, []);
 
-    const handlePacienteSearch = (query) => {
+    const handlePacienteSearch = async (query) => {
         setQuery(query);
 
-        // Garante que todosPacientes é array
         const listaPacientes = Array.isArray(todosPacientes) ? todosPacientes : [];
 
         if (!query.trim()) {
@@ -46,13 +47,14 @@ const UserSearch = ({
             return;
         }
 
-        const filteredPacientes = listaPacientes.filter((paciente) =>
-            paciente.nome.toLowerCase().includes(query.toLowerCase())
-        );
-
-        setPacientes(filteredPacientes);
+        try {
+            const serverList = await getPacientesLista(query.trim());
+            const arr = Array.isArray(serverList) ? serverList : [];
+            setPacientes(arr);
+        } catch (e) {
+            setPacientes([]);
+        }
         setShowSuggestions(true);
-
         onUserSelect(null); // <-- só seleciona ao clicar!
     };
 
