@@ -478,8 +478,9 @@ const EditarAgendamento = () => {
                     relatorioExistente={relatorioExistente}
                     onClose={() => setShowModalRelatorio(false)}
                     onSave={(relatorioCompleto) => {
-                      // Aqui você pode fazer a requisição para salvar o relatório
-                      console.log("Relatório salvo:", relatorioCompleto);
+                      // Ao salvar, atualiza o estado para refletir que já existe relatório
+                      // Isso troca o label do botão para "Visualizar Relatório"
+                      setRelatorioExistente(relatorioCompleto?.conteudo ?? true);
                       setShowModalRelatorio(false);
                     }}
                   />

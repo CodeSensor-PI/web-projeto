@@ -15,22 +15,32 @@ const ModalRelatorio = ({ onClose, onSave, paciente, idSessao, relatorioExistent
     const [textoEdicao, setTextoEdicao] = useState("");
 
     const handleSave = async () => {
+        // Agora a coluna `data` deve refletir o momento de criação do relatório
+        const now = new Date();
+        const y = now.getFullYear();
+        const mo = String(now.getMonth() + 1).padStart(2, '0');
+        const d = String(now.getDate()).padStart(2, '0');
+        const hh = String(now.getHours()).padStart(2, '0');
+        const mm = String(now.getMinutes()).padStart(2, '0');
+        const ss = String(now.getSeconds()).padStart(2, '0');
+        const dataCriacao = `${y}-${mo}-${d}T${hh}:${mm}:${ss}`; // formato local YYYY-MM-DDTHH:mm:ss
+
         const relatorioCompleto = {
             conteudo: relatorio,
-            data: "2025-09-14T18:45:00", // ou use new Date().toISOString() se quiser a data atual
+            data: dataCriacao,
             fkPaciente: paciente.id,
             fkSessao: idSessao
         };
 
         try {
             const resultado = await postCriarRelatorio(relatorioCompleto);
-            console.log("Relatório criado com sucesso:", resultado);
-            onSave(resultado); // atualiza o estado no componente pai, se necessário
+            onSave(resultado);
             setRelatorio("");
-            onClose(); // fecha o modal
+            responseMessage("Relatório criado com sucesso.");
+            onClose();
         } catch (error) {
             console.error("Erro ao salvar relatório:", error);
-            alert("Não foi possível salvar o relatório. Tente novamente.");
+            errorMessage("Não foi possível salvar o relatório. Tente novamente.");
         }
     };
 
