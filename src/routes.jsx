@@ -17,9 +17,11 @@ import EditarPsicologo from "./pages/dashboard/psicologos/visualizarPsicologo/Ed
 import EsqueceuSenha from "./pages/Login/EsqueceuSenha/EsqueceuSenha";
 import ConfirmarCodigo from "./pages/Login/EsqueceuSenha/ConfirmarCodigo/ConfirmarCodigo";
 import AlterarSenha from "./pages/Login/EsqueceuSenha/AlterarSenha/AlterarSenha";
+import ModalDemo from "./pages/demo/ModalDemo";
 
 export const routes = createBrowserRouter([
     { path: "/", element: <LandingPage /> },
+    { path: "/demo", element: <ModalDemo /> },
     { path: "/login", element: <LoginPage /> },
     { path: "/login/esqueceu-senha", element: <EsqueceuSenha /> },
     { path: "/login/esqueceu-senha/confirmar-codigo", element: <ConfirmarCodigo /> },
