@@ -4,7 +4,7 @@ import MenuLateralComponent from '../components/MenuLateral/MenuLateralComponent
 import { FaPen, FaPlus, FaSearch } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import MainComponent from '../components/MainComponent/MainComponent';
-import { getPacientes } from '../../../provider/api/pacientes/fetchs-pacientes';
+import { getPacientes, getPacientesLista } from '../../../provider/api/pacientes/fetchs-pacientes';
 import CardPaciente from './components/CardPaciente/CardPaciente';
 import Loading from '../components/Loading/Loading';
 
@@ -16,44 +16,62 @@ const Pacientes = () => {
   const [pacientesLista, setPacientesLista] = React.useState(pacientes);
   const [pesquisar, setPesquisar] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+  const [page, setPage] = React.useState(1);
+  const [size, setSize] = React.useState(12);
+  const [totalPages, setTotalPages] = React.useState(null);
   const navigate = useNavigate();
 
 
 
-  React.useEffect(() => {
+  const carregarPagina = React.useCallback(async (p = page, s = size) => {
     setLoading(true);
-    const fetchPacientes = async () => {
-      try {
-        const pacientes = await getPacientes();
-        if (Array.isArray(pacientes)) {
-          setPacientes(pacientes);
-          setPacientesLista(pacientes);
-          console.log("Pacientes encontrados:", pacientes);
-        } else {
-          console.error("A resposta da API não é um array:", pacientes);
-        }
-      } catch (error) {
-        console.error("Erro ao encontrar pacientes:", error);
-      }
-      setTimeout(() => setLoading(false), 500);
-    };
+    try {
+      const data = await getPacientes(p, s);
+      // Suporta tanto array simples quanto objeto paginado { content, totalPages }
+      const lista = Array.isArray(data) ? data : Array.isArray(data?.content) ? data.content : [];
+      const tp = Number.isFinite(data?.totalPages) ? data.totalPages : null;
+      setTotalPages(tp);
+      setPacientes(lista);
+      setPacientesLista(lista);
+    } catch (error) {
+      console.error("Erro ao encontrar pacientes:", error);
+      setPacientes([]);
+      setPacientesLista([]);
+    } finally {
+      setTimeout(() => setLoading(false), 300);
+    }
+  }, [page, size]);
 
-    fetchPacientes();
-  }, []);
+  React.useEffect(() => {
+    // Recarrega a lista paginada quando página/tamanho mudam e não há pesquisa
+    if (!pesquisar) {
+      carregarPagina(page, size);
+    }
+  }, [page, size, pesquisar, carregarPagina]);
 
-  const handleSearch = (e) => {
-    const pesquisa = e.target.value.toLowerCase();
+  const handleSearch = async (e) => {
+    const pesquisa = e.target.value;
     setPesquisar(pesquisa);
 
-    if (pesquisa === '') {
-      setPacientesLista(pacientes);
+    if (!pesquisa || !pesquisa.trim()) {
+      // Limpa pesquisa: volta para a primeira página da listagem paginada
+      setPage(1);
+      await carregarPagina(1, size);
       return;
     }
 
-    const filteredPacientes = pacientes.filter((paciente) =>
-      paciente.nome.toLowerCase().startsWith(pesquisa)
-    );
-    setPacientesLista(filteredPacientes);
+    // Busca no servidor por nome (sem paginação)
+    try {
+      setLoading(true);
+      const lista = await getPacientesLista(pesquisa.trim());
+      const arr = Array.isArray(lista) ? lista : [];
+      setPacientesLista(arr);
+    } catch (err) {
+      console.error('Erro na busca por nome:', err);
+      setPacientesLista([]);
+    } finally {
+      setTimeout(() => setLoading(false), 200);
+    }
   }
 
   const redirectToVisualizarPaciente = (id) => {
@@ -84,6 +102,7 @@ const Pacientes = () => {
               />
             </div>
 
+
             <button
               className='btn_agendamento flex rounded-full'
               onClick={(e) => {
@@ -109,6 +128,46 @@ const Pacientes = () => {
                 />
               ))}
             </div>
+            {!pesquisar && (
+              <div className="flex flex-col items-center justify-center gap-3 mt-auto pt-4 w-full">
+                <div className="flex items-center justify-center gap-4">
+                  <button
+                    className='btn_secundario rounded-full'
+                    type='button'
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page <= 1}
+                  >
+                    Anterior
+                  </button>
+                  <div>
+                    Página {page}{totalPages ? ` de ${totalPages}` : ''}
+                  </div>
+                  <button
+                    className='btn_secundario rounded-full'
+                    type='button'
+                    onClick={() => setPage((p) => p + 1)}
+                    disabled={totalPages ? page >= totalPages : (pacientesLista.length < size)}
+                  >
+                    Próxima
+                  </button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <label htmlFor="page-size" style={{ whiteSpace: 'nowrap' }}>Itens por página:</label>
+                  <select
+                    id="page-size"
+                    className="input-pesquisa-select"
+                    value={size}
+                    onChange={(e) => { setPage(1); setSize(Number(e.target.value) || 12); }}
+                  >
+                    <option value={6}>6</option>
+                    <option value={9}>9</option>
+                    <option value={12}>12</option>
+                    <option value={18}>18</option>
+                    <option value={36}>36</option>
+                  </select>
+                </div>
+              </div>
+            )}
           </div>
         
       </MainComponent>
