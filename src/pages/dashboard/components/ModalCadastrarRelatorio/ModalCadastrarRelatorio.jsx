@@ -2,33 +2,45 @@ import React, { useState, useEffect } from "react";
 import "./Modal.css";
 import { ajustarDataParaPTBR } from "../../../../utils/ajustarData";
 import { getRelatorioPorSessao } from "../../../../provider/api/agendamentos/fetchs-relatorio";
-import { postCriarRelatorio } from "../../../../provider/api/relatorios/fetchs-relatorios";
-import { deleteRelatorio } from "../../../../provider/api/relatorios/fetchs-relatorios";
-import { FaTrashCan } from "react-icons/fa6";
+import { postCriarRelatorio, putAtualizarRelatorio, deleteRelatorio } from "../../../../provider/api/relatorios/fetchs-relatorios";
 import { IoTrashBinOutline } from "react-icons/io5";
+import { FaPen } from "react-icons/fa6";
+import { confirmAction, responseMessage, errorMessage } from "../../../../utils/alert";
 
 
 const ModalRelatorio = ({ onClose, onSave, paciente, idSessao, relatorioExistente }) => {
     const [relatorio, setRelatorio] = useState("");
     const [relatorioExistenteLocal, setRelatorioExistenteLocal] = useState(null);
+    const [isEditing, setIsEditing] = useState(false);
+    const [textoEdicao, setTextoEdicao] = useState("");
 
     const handleSave = async () => {
+        // Agora a coluna `data` deve refletir o momento de criação do relatório
+        const now = new Date();
+        const y = now.getFullYear();
+        const mo = String(now.getMonth() + 1).padStart(2, '0');
+        const d = String(now.getDate()).padStart(2, '0');
+        const hh = String(now.getHours()).padStart(2, '0');
+        const mm = String(now.getMinutes()).padStart(2, '0');
+        const ss = String(now.getSeconds()).padStart(2, '0');
+        const dataCriacao = `${y}-${mo}-${d}T${hh}:${mm}:${ss}`; // formato local YYYY-MM-DDTHH:mm:ss
+
         const relatorioCompleto = {
             conteudo: relatorio,
-            data: "2025-09-14T18:45:00", // ou use new Date().toISOString() se quiser a data atual
+            data: dataCriacao,
             fkPaciente: paciente.id,
             fkSessao: idSessao
         };
 
         try {
             const resultado = await postCriarRelatorio(relatorioCompleto);
-            console.log("Relatório criado com sucesso:", resultado);
-            onSave(resultado); // atualiza o estado no componente pai, se necessário
+            onSave(resultado);
             setRelatorio("");
-            onClose(); // fecha o modal
+            responseMessage("Relatório criado com sucesso.");
+            onClose();
         } catch (error) {
             console.error("Erro ao salvar relatório:", error);
-            alert("Não foi possível salvar o relatório. Tente novamente.");
+            errorMessage("Não foi possível salvar o relatório. Tente novamente.");
         }
     };
 
@@ -38,6 +50,7 @@ const ModalRelatorio = ({ onClose, onSave, paciente, idSessao, relatorioExistent
                 const resultado = await getRelatorioPorSessao(idSessao);
                 if (resultado && resultado.conteudo) {
                     setRelatorioExistenteLocal(resultado);
+                    setTextoEdicao(resultado.conteudo);
                     console.log("Relatório existente encontrado:", resultado);
                 }
             } catch (error) {
@@ -52,15 +65,59 @@ const ModalRelatorio = ({ onClose, onSave, paciente, idSessao, relatorioExistent
 
 
     const handleDelete = async () => {
-        const confirmar = window.confirm("Tem certeza que deseja excluir este relatório?");
-        if (!confirmar || !relatorioExistenteLocal.id) console.log(relatorioExistente.id);
-
+        if (!relatorioExistenteLocal?.id) return;
+        const result = await confirmAction({
+            title: "Excluir relatório?",
+            message: "Essa ação não pode ser desfeita.",
+            confirmText: "Sim, excluir",
+            cancelText: "Cancelar",
+            icon: "warning",
+            size: "small",
+        });
+        if (!result.isConfirmed) return;
         try {
             await deleteRelatorio(relatorioExistenteLocal.id);
-            setRelatorioExistenteLocal(null); // limpa o estado
-            alert("Relatório excluído com sucesso.");
+            setRelatorioExistenteLocal(null);
+            responseMessage("Relatório excluído com sucesso.");
         } catch (error) {
-            alert("Erro ao excluir relatório. Tente novamente.");
+            errorMessage("Erro ao excluir relatório. Tente novamente.");
+        }
+    };
+
+    const handleToggleEdit = () => {
+        if (relatorioExistenteLocal) {
+            setTextoEdicao(relatorioExistenteLocal.conteudo || "");
+        }
+        setIsEditing((prev) => !prev);
+    };
+
+    const handleUpdate = async () => {
+        if (!relatorioExistenteLocal?.id) return;
+        if (!textoEdicao || textoEdicao.trim().length === 0) {
+            errorMessage("O conteúdo do relatório não pode estar vazio.");
+            return;
+        }
+        const result = await confirmAction({
+            title: "Salvar alterações?",
+            message: "Confirme para atualizar o relatório desta sessão.",
+            confirmText: "Salvar",
+            cancelText: "Cancelar",
+            icon: "question",
+            size: "medium",
+        });
+        if (!result.isConfirmed) return;
+        try {
+            const atualizado = await putAtualizarRelatorio(relatorioExistenteLocal.id, { conteudo: textoEdicao });
+            // Atualiza o estado local com o retorno
+            const novoRelatorio = { ...relatorioExistenteLocal, ...atualizado };
+            // Caso o backend retorne apenas campos parciais, assegura o conteudo atualizado
+            novoRelatorio.conteudo = atualizado?.conteudo ?? textoEdicao;
+            setRelatorioExistenteLocal(novoRelatorio);
+            setIsEditing(false);
+            responseMessage("Relatório atualizado com sucesso.");
+        } catch (error) {
+            console.error("Erro ao atualizar relatório:", error);
+            errorMessage("Não foi possível atualizar o relatório. Tente novamente.");
         }
     };
 
@@ -76,7 +133,7 @@ const ModalRelatorio = ({ onClose, onSave, paciente, idSessao, relatorioExistent
     return (
         <div className="modal-overlay" onClick={handleOverlayClick}>
             <div className="modal-content" onClick={e => e.stopPropagation()}>
-                <button className="modal-close" onClick={onClose}>&times;</button>
+                <button type="button" className="modal-close" onClick={onClose}>&times;</button>
                 <div style={{ marginBottom: '1em' }}>
                     <h1>Adicionar Relatório</h1>
                     {paciente && (
@@ -88,17 +145,49 @@ const ModalRelatorio = ({ onClose, onSave, paciente, idSessao, relatorioExistent
                     )}
                 </div>
                 {relatorioExistenteLocal ? (
-                    <div className="flex gap-2 justify-between" style={{ background: '#e0e7ff', color: '#3730a3', padding: '1em', borderRadius: '8px', marginBottom: '1em' }}>
-                        <div className="flex flex-col gap-2">
+                    <div className="cardModal">
+                        <div className="flex flex-col gap-2" style={{ flex: 1 }}>
                             <strong>Relatório já registrado para esta sessão:</strong>
-                            <div style={{ marginTop: '0.5em' }}>{relatorioExistenteLocal.conteudo}</div>
+                            {isEditing ? (
+                                <>
+                                    <textarea
+                                        value={textoEdicao}
+                                        onChange={(e) => setTextoEdicao(e.target.value)}
+                                        rows={8}
+                                        style={{ width: "100%", marginTop: "0.5em" }}
+                                    />
+                                    <div className="flex gap-2 mt-4">
+                                        <button type="button" className="btn_primario" onClick={handleUpdate}>
+                                            Salvar Alterações
+                                        </button>
+                                        <button type="button" className="btn_secundario" onClick={handleToggleEdit}>
+                                            Cancelar
+                                        </button>
+                                    </div>
+                                </>
+                            ) : (
+                                <div style={{ marginTop: '0.5em', whiteSpace: 'pre-wrap' }}>{relatorioExistenteLocal.conteudo}</div>
+                            )}
                         </div>
-                        <button
-                            className="btn_deletar"
-                            onClick={handleDelete}
-                        >
-                            <IoTrashBinOutline size={24} />
-                        </button>
+                        <div className="flex flex-col items-center gap-2">
+                            {!isEditing && (
+                                <button
+                                    type="button"
+                                    className="btn_editar"
+                                    title="Editar relatório"
+                                    onClick={handleToggleEdit}
+                                >
+                                    <FaPen size={18} />
+                                </button>
+                            )}
+                            <button
+                                type="button"
+                                className="btn_deletar"
+                                onClick={handleDelete}
+                            >
+                                <IoTrashBinOutline size={24} />
+                            </button>
+                        </div>
                     </div>
                 ) : (
                     <>
@@ -110,10 +199,10 @@ const ModalRelatorio = ({ onClose, onSave, paciente, idSessao, relatorioExistent
                             style={{ width: "100%", marginTop: "1em" }}
                         />
                         <div className="flex gap-2 mt-4">
-                            <button className="btn_primario" onClick={handleSave}>
+                            <button type="button" className="btn_primario" onClick={handleSave}>
                                 Salvar Relatório
                             </button>
-                            <button className="btn_secundario" onClick={onClose}>
+                            <button type="button" className="btn_secundario" onClick={onClose}>
                                 Cancelar
                             </button>
                         </div>

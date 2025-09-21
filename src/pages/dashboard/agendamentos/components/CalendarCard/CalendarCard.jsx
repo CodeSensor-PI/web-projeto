@@ -88,7 +88,7 @@ const CalendarCard = ({
           {patientName && ` - ${patientName}`}
         </span>
         <div className="agendamento-info">
-          <p>Status: {status}</p>
+          <p>Status: {isDisabled ? "Indisponível" : status}</p>
         </div>
       </div>
 
