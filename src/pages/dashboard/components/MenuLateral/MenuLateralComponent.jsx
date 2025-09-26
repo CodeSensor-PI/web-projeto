@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./MenuLateral.css";
+import "../MenuLateral/menuLateral.css";
 import Logo from "../../../../assets/images/icons/Logo.svg";
 import { Link, useLocation } from "react-router-dom";
 
@@ -8,7 +8,9 @@ const MenuLateralComponent = () => {
   const [expandido, setExpandido] = useState(false);
 
   return (
-    <div className={`menu-lateral flex flex-col${expandido ? " expandido" : ""}`}>
+    <div
+      className={`menu-lateral flex flex-col${expandido ? " expandido" : ""}`}
+    >
       <section className="logo">
         <Link to="/dashboard">
           <img src={Logo} alt="Logo" className="w-8" />
