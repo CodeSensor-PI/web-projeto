@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import './Agendamentos.css';
-import MenuLateralComponent from '../components/MenuLateral/MenuLateralComponent';
-import MainComponent from '../components/MainComponent/MainComponent';
-import { FaPlus } from 'react-icons/fa';
-import CalendarCard from './components/CalendarCard/CalendarCard';
-import { getAgendamentos } from '../../../provider/api/agendamentos/fetchs-agendamentos';
-import Loading from '../components/Loading/Loading';
+import { useEffect, useState } from "react";
+import "../agendamentos/agendamentos.css";
+import MenuLateralComponent from "../components/MenuLateral/MenuLateralComponent";
+import MainComponent from "../components/MainComponent/MainComponent";
+import { FaPlus } from "react-icons/fa";
+import CalendarCard from "./components/CalendarCard/CalendarCard";
+import { getAgendamentos } from "../../../provider/api/agendamentos/fetchs-agendamentos";
+import Loading from "../components/Loading/Loading";
 
 const Agendamentos = () => {
   const [agendamentos, setAgendamentos] = useState([]);
@@ -13,116 +13,126 @@ const Agendamentos = () => {
   const [offsetSemana, setOffsetSemana] = useState(0);
 
   const redirectToCadastrarAgendamento = () => {
-    window.location.href = './agendamentos/cadastrar';
+    window.location.href = "./agendamentos/cadastrar";
   };
 
-const getWeekRange = (offset = 0) => {
-  const today = new Date();
-  const currentDay = today.getDay();
+  const getWeekRange = (offset = 0) => {
+    const today = new Date();
+    const currentDay = today.getDay();
 
-  if (currentDay === 6) today.setDate(today.getDate() + 2);
-  else if (currentDay === 0) today.setDate(today.getDate() + 1);
-  else today.setDate(today.getDate() - (currentDay - 1));
+    if (currentDay === 6) today.setDate(today.getDate() + 2);
+    else if (currentDay === 0) today.setDate(today.getDate() + 1);
+    else today.setDate(today.getDate() - (currentDay - 1));
 
-  today.setDate(today.getDate() + offset * 7);
+    today.setDate(today.getDate() + offset * 7);
 
-  const start = new Date(today);
-  const end = new Date(today);
-  end.setDate(start.getDate() + 4);
+    const start = new Date(today);
+    const end = new Date(today);
+    end.setDate(start.getDate() + 4);
 
-  const format = (d) =>
-    d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const format = (d) =>
+      d.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
 
-  return `${format(start)} - ${format(end)}`;
-};
+    return `${format(start)} - ${format(end)}`;
+  };
 
-const getCurrentWeekDays = (offset = 0) => {
-  const daysOfWeek = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
-  const today = new Date();
-  const currentDay = today.getDay();
+  const getCurrentWeekDays = (offset = 0) => {
+    const daysOfWeek = [
+      "Domingo",
+      "Segunda-feira",
+      "Terça-feira",
+      "Quarta-feira",
+      "Quinta-feira",
+      "Sexta-feira",
+      "Sábado",
+    ];
+    const today = new Date();
+    const currentDay = today.getDay();
 
-  // Vai para segunda-feira da semana atual
-  if (currentDay === 6) today.setDate(today.getDate() + 2);
-  else if (currentDay === 0) today.setDate(today.getDate() + 1);
-  else today.setDate(today.getDate() - (currentDay - 1));
+    // Vai para segunda-feira da semana atual
+    if (currentDay === 6) today.setDate(today.getDate() + 2);
+    else if (currentDay === 0) today.setDate(today.getDate() + 1);
+    else today.setDate(today.getDate() - (currentDay - 1));
 
-  // Aplica o offset de semanas
-  today.setDate(today.getDate() + offset * 7);
+    // Aplica o offset de semanas
+    today.setDate(today.getDate() + offset * 7);
 
-  // Gera os próximos 5 dias úteis (segunda a sexta)
-  const weekDays = [];
-  for (let i = 0; i < 5; i++) {
-    const day = new Date(today);
-    day.setDate(today.getDate() + i);
-    const dayOfMonth = day.getDate().toString().padStart(2, '0');
-    const month = (day.getMonth() + 1).toString().padStart(2, '0');
-    const year = day.getFullYear();
-    weekDays.push({
-      dayName: daysOfWeek[day.getDay()],
-      date: `${dayOfMonth}/${month}/${year}`,
-    });
-  }
-  return weekDays;
-};
+    // Gera os próximos 5 dias úteis (segunda a sexta)
+    const weekDays = [];
+    for (let i = 0; i < 5; i++) {
+      const day = new Date(today);
+      day.setDate(today.getDate() + i);
+      const dayOfMonth = day.getDate().toString().padStart(2, "0");
+      const month = (day.getMonth() + 1).toString().padStart(2, "0");
+      const year = day.getFullYear();
+      weekDays.push({
+        dayName: daysOfWeek[day.getDay()],
+        date: `${dayOfMonth}/${month}/${year}`,
+      });
+    }
+    return weekDays;
+  };
 
   const weekDays = getCurrentWeekDays(offsetSemana);
 
   const timeSlots = [
-    '08:00 - 09:00',
-    '09:00 - 10:00',
-    '10:00 - 11:00',
-    '11:00 - 12:00',
-    '13:00 - 14:00',
-    '14:00 - 15:00',
-    '15:00 - 16:00',
-    '16:00 - 17:00',
+    "08:00 - 09:00",
+    "09:00 - 10:00",
+    "10:00 - 11:00",
+    "11:00 - 12:00",
+    "13:00 - 14:00",
+    "14:00 - 15:00",
+    "15:00 - 16:00",
+    "16:00 - 17:00",
   ];
-
-  
 
   useEffect(() => {
     const fetchAgendamentos = async () => {
-        try {
-            setLoading(true);
-            const response = await getAgendamentos();
+      try {
+        setLoading(true);
+        const response = await getAgendamentos();
 
-            if (Array.isArray(response)) {
-                const agendamentosTransformados = response.map((agendamento) => ({
-                    ...agendamento,
-                    timeSlot: agendamento.hora
-                        ? agendamento.hora.substring(0, 5) 
-                        : '00:00',
-                    patientName: agendamento.fkPaciente?.nome || 'Desconhecido', 
-                    status: agendamento.statusSessao || 'Indefinido', 
-                }));
+        if (Array.isArray(response)) {
+          const agendamentosTransformados = response.map((agendamento) => ({
+            ...agendamento,
+            timeSlot: agendamento.hora
+              ? agendamento.hora.substring(0, 5)
+              : "00:00",
+            patientName: agendamento.fkPaciente?.nome || "Desconhecido",
+            status: agendamento.statusSessao || "Indefinido",
+          }));
 
-                setAgendamentos(agendamentosTransformados);
-                console.log("Agendamentos transformados:", agendamentosTransformados);
-            } else {
-                console.error("A resposta da API não é um array:", response);
-            }
-        } catch (error) {
-            console.error("Erro ao encontrar agendamentos:", error);
-        } finally {
-            setTimeout(() => setLoading(false), 500);
+          setAgendamentos(agendamentosTransformados);
+          console.log("Agendamentos transformados:", agendamentosTransformados);
+        } else {
+          console.error("A resposta da API não é um array:", response);
         }
+      } catch (error) {
+        console.error("Erro ao encontrar agendamentos:", error);
+      } finally {
+        setTimeout(() => setLoading(false), 500);
+      }
     };
 
     fetchAgendamentos();
-}, []);
-    
+  }, []);
+
   const capitalizeFirstLetter = (text) => {
-    if (!text) return '';
+    if (!text) return "";
     return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
   };
 
   const formatDateToBackend = (date) => {
-    const [day, month, year] = date.split('/');
-    return `${year}-${month}-${day}`; 
-};
+    const [day, month, year] = date.split("/");
+    return `${year}-${month}-${day}`;
+  };
 
   return (
-    <div className='div-agendamentos flex'>
+    <div className="div-agendamentos flex">
       <MenuLateralComponent />
       <MainComponent
         title="Agendamentos"
@@ -140,49 +150,57 @@ const getCurrentWeekDays = (offset = 0) => {
             >
               {`${getWeekRange(offsetSemana + 1)} >`}
             </button>
-            <button className='btn_agendamento flex rounded-full' onClick={redirectToCadastrarAgendamento}>
-              <FaPlus className='icon' />
+            <button
+              className="btn_agendamento flex rounded-full"
+              onClick={redirectToCadastrarAgendamento}
+            >
+              <FaPlus className="icon" />
               Agendar
             </button>
           </div>
         }
       >
-        <section className='calendario-container'>
+        <section className="calendario-container">
           {loading ? (
             <Loading />
           ) : (
             <>
-              <table className='calendario-table flex flex-col w-full'>
-                <thead className='flex w-full justify-between'>
-                  <tr className='table-tr flex w-full justify-evenly gap-2' >
+              <table className="calendario-table flex flex-col w-full">
+                <thead className="flex w-full justify-between">
+                  <tr className="table-tr flex w-full justify-evenly gap-2">
                     {weekDays.map((day, index) => (
-                      <th key={index} className='calendario-card-header'>
+                      <th key={index} className="calendario-card-header">
                         <span>{day.dayName}</span>
-                        <span>{day.date}</span> 
+                        <span>{day.date}</span>
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className='table-body flex w-full flex-col justify-between gap-2'>
+                <tbody className="table-body flex w-full flex-col justify-between gap-2">
                   {timeSlots.map((timeSlot, rowIndex) => (
-                    <tr key={rowIndex} className='flex w-full justify-evenly gap-2'>
+                    <tr
+                      key={rowIndex}
+                      className="flex w-full justify-evenly gap-2"
+                    >
                       {weekDays.map((day, colIndex) => {
                         const formatDateToDisplay = (date) => {
-                          const [year, month, day] = date.split('-');
+                          const [year, month, day] = date.split("-");
                           return `${day}/${month}/${year}`;
                         };
 
                         const agendamento = agendamentos.find(
-                            (a) =>
-                                a.data === formatDateToBackend(day.date) &&
-                                a.timeSlot === timeSlot.split(" - ")[0]
+                          (a) =>
+                            a.data === formatDateToBackend(day.date) &&
+                            a.timeSlot === timeSlot.split(" - ")[0]
                         );
                         return (
-                          <td key={colIndex} className='div-calendario-card'>
+                          <td key={colIndex} className="div-calendario-card">
                             {agendamento ? (
                               <CalendarCard
-                                timeSlot={agendamento.timeSlot.split(' - ')[0]}
-                                status={capitalizeFirstLetter(agendamento.status)}
+                                timeSlot={agendamento.timeSlot.split(" - ")[0]}
+                                status={capitalizeFirstLetter(
+                                  agendamento.status
+                                )}
                                 patientName={agendamento.patientName}
                                 buttonText="Ver Detalhes"
                                 day={day.date}
@@ -190,7 +208,7 @@ const getCurrentWeekDays = (offset = 0) => {
                               />
                             ) : (
                               <CalendarCard
-                                timeSlot={timeSlot.split(' - ')[0]}
+                                timeSlot={timeSlot.split(" - ")[0]}
                                 status="Disponível"
                                 patientName=""
                                 buttonText="+ Agendar"
