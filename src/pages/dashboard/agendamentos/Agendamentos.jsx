@@ -4,7 +4,7 @@ import MenuLateralComponent from '../components/MenuLateral/MenuLateralComponent
 import MainComponent from '../components/MainComponent/MainComponent';
 import { FaPlus } from 'react-icons/fa';
 import CalendarCard from './components/CalendarCard/CalendarCard';
-import { getAgendamentos } from '../../../provider/api/agendamentos/fetchs-agendamentos';
+import { paginacaoGetAgendamentos } from '../../../provider/api/agendamentos/fetchs-agendamentos';
 import Loading from '../components/Loading/Loading';
 
 const Agendamentos = () => {
@@ -79,37 +79,43 @@ const getCurrentWeekDays = (offset = 0) => {
   ];
 
   
+  const getSegundaDaSemanaISO = (offset = 0) => {
+    const d = new Date();
+    const dow = d.getDay();
+    if (dow === 6) d.setDate(d.getDate() + 2);
+    else if (dow === 0) d.setDate(d.getDate() + 1);
+    else d.setDate(d.getDate() - (dow - 1));
+    d.setDate(d.getDate() + offset * 7);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
 
   useEffect(() => {
-    const fetchAgendamentos = async () => {
-        try {
-            setLoading(true);
-            const response = await getAgendamentos();
-
-            if (Array.isArray(response)) {
-                const agendamentosTransformados = response.map((agendamento) => ({
-                    ...agendamento,
-                    timeSlot: agendamento.hora
-                        ? agendamento.hora.substring(0, 5) 
-                        : '00:00',
-                    patientName: agendamento.fkPaciente?.nome || 'Desconhecido', 
-                    status: agendamento.statusSessao || 'Indefinido', 
-                }));
-
-                setAgendamentos(agendamentosTransformados);
-                console.log("Agendamentos transformados:", agendamentosTransformados);
-            } else {
-                console.error("A resposta da API não é um array:", response);
-            }
-        } catch (error) {
-            console.error("Erro ao encontrar agendamentos:", error);
-        } finally {
-            setTimeout(() => setLoading(false), 500);
-        }
+    const fetchAgendamentosSemana = async () => {
+      try {
+        setLoading(true);
+        const segunda = getSegundaDaSemanaISO(offsetSemana);
+        const data = await paginacaoGetAgendamentos({ segunda, size: 40 });
+        const lista = Array.isArray(data) ? data : Array.isArray(data?.content) ? data.content : [];
+        const agendamentosTransformados = lista.map((agendamento) => ({
+          ...agendamento,
+          timeSlot: agendamento.hora ? agendamento.hora.substring(0, 5) : '00:00',
+          patientName: agendamento.fkPaciente?.nome || 'Desconhecido',
+          status: agendamento.statusSessao || 'Indefinido',
+        }));
+        setAgendamentos(agendamentosTransformados);
+      } catch (error) {
+        console.error('Erro ao buscar agendamentos da semana:', error);
+        setAgendamentos([]);
+      } finally {
+        setTimeout(() => setLoading(false), 500);
+      }
     };
 
-    fetchAgendamentos();
-}, []);
+    fetchAgendamentosSemana();
+  }, [offsetSemana]);
     
   const capitalizeFirstLetter = (text) => {
     if (!text) return '';
