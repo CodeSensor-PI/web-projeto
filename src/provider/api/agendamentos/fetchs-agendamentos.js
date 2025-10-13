@@ -1,4 +1,4 @@
-import api from "../api/api";
+import api from "../api";
 
 // Busca agendamento por ID
 export const getAgendamentosPorId = async (id) => {
