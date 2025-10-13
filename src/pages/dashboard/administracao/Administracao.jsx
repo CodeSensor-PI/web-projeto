@@ -11,7 +11,7 @@ import {
   confirmCancelEdit,
 } from "../../../utils/alert";
 import { alterarSenha } from "../../../provider/api/alterar-senha-psi";
-import axios from "axios";
+import api from "../../../provider/api/api"; // Alteração aqui
 import MainComponent from "../components/MainComponent/MainComponent";
 import MenuLateralComponent from "../components/MenuLateral/MenuLateralComponent";
 
@@ -44,8 +44,8 @@ const Administracao = () => {
     const idUsuario = localStorage.getItem("idUsuario");
 
     if (idUsuario) {
-      axios
-        .get(`http://localhost:8080/psicologos/${idUsuario}`)
+      api
+        .get(`/psicologos/${idUsuario}`)
         .then((response) => {
           const { nome, email, telefone, crp } = response.data;
           setNome(nome || "");
@@ -91,7 +91,7 @@ const Administracao = () => {
     }
     const idDoUsuario = localStorage.getItem("idUsuario");
     try {
-      await axios.put(`/psicologos/${idDoUsuario}`, {
+      await api.put(`/psicologos/${idDoUsuario}`, {
         email,
         nome,
         telefone: removeMask(telefone),
@@ -216,36 +216,34 @@ const Administracao = () => {
                   />
                 </h2>
                 <div className="card-inputs">
-                  
-                    <InputField
-                      labelTitle="Senha Atual"
-                      value={senha}
-                      disabled={!isEditingPassword}
-                      width={"w-full"}
-                      containerWidth={"w-[90%]"}
-                      onChange={(e) => setSenha(e.target.value)}
-                      type="password"
-                    />
+                  <InputField
+                    labelTitle="Senha Atual"
+                    value={senha}
+                    disabled={!isEditingPassword}
+                    width={"w-full"}
+                    containerWidth={"w-[90%]"}
+                    onChange={(e) => setSenha(e.target.value)}
+                    type="password"
+                  />
 
-                    <InputField
-                      labelTitle="Nova senha"
-                      value={novaSenha}
-                      width={"w-full"}
-                      containerWidth={"w-[90%]"}
-                      disabled={!isEditingPassword}
-                      onChange={(e) => setNovaSenha(e.target.value)}
-                      type="password"
-                    />
-                    <InputField
-                      labelTitle="Confirmar senha"
-                      value={confirmarSenha}
-                      width={"w-full"}
-                      containerWidth={"w-[90%]"}
-                      disabled={!isEditingPassword}
-                      onChange={(e) => setConfirmarSenha(e.target.value)}
-                      type="password"
-                    />
-                   
+                  <InputField
+                    labelTitle="Nova senha"
+                    value={novaSenha}
+                    width={"w-full"}
+                    containerWidth={"w-[90%]"}
+                    disabled={!isEditingPassword}
+                    onChange={(e) => setNovaSenha(e.target.value)}
+                    type="password"
+                  />
+                  <InputField
+                    labelTitle="Confirmar senha"
+                    value={confirmarSenha}
+                    width={"w-full"}
+                    containerWidth={"w-[90%]"}
+                    disabled={!isEditingPassword}
+                    onChange={(e) => setConfirmarSenha(e.target.value)}
+                    type="password"
+                  />
                 </div>
                 <div className="inputs-button">
                   <SaveButton

@@ -1,26 +1,21 @@
+import apiRelatorios from "../api/api-relatorios";
+
 // Busca todos os relatórios de um paciente
 export const getRelatoriosPorPaciente = async (pacienteId) => {
   try {
-    const response = await axios.get(`/relatorios/paciente/${pacienteId}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await apiRelatorios.get(
+      `/relatorios/paciente/${pacienteId}`
+    );
     return response.data;
   } catch (error) {
     console.error("Erro ao buscar relatórios do paciente:", error);
     return [];
   }
 };
-import axios from "axios";
 
 export const getRelatorioPorSessao = async (idSessao) => {
   try {
-    const response = await axios.get(`/relatorios/sessao/${idSessao}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await apiRelatorios.get(`/relatorios/sessao/${idSessao}`);
     return response.data;
   } catch (error) {
     console.error("Erro ao buscar relatório da sessão:", error);

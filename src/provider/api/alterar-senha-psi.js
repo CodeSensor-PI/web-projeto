@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "./api/api";
 
 /**
  * Função para alterar a senha do usuário.
@@ -10,7 +10,7 @@ import axios from "axios";
 
 export const alterarSenha = async (id, senhaAtual, novaSenha) => {
   try {
-    const response = await axios.put(`/psicologos/${id}/alterar-senha`, {
+    const response = await api.put(`/psicologos/${id}/alterar-senha`, {
       senha: senhaAtual,
       novaSenha,
     });
