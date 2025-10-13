@@ -11,7 +11,7 @@ import {
   confirmCancelEdit,
 } from "../../../utils/alert";
 import { alterarSenha } from "../../../provider/api/alterar-senha-psi";
-import api from "../../../provider/api/api"; // Alteração aqui
+import api from "../../../provider/api/api";
 import MainComponent from "../components/MainComponent/MainComponent";
 import MenuLateralComponent from "../components/MenuLateral/MenuLateralComponent";
 

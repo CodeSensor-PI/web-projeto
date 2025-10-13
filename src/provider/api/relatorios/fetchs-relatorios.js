@@ -1,4 +1,4 @@
-import apiRelatorios from "../api/api-relatorios";
+import apiRelatorios from "../api-relatorios";
 
 // GET Buscar Todos Relatorios
 export const getRelatorios = async () => {

@@ -1,4 +1,4 @@
-import api from "../api/api";
+import api from "../api";
 
 // Lista paginada de pacientes
 export const getPacientes = async (page = 1, size = 10) => {

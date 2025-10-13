@@ -1,4 +1,4 @@
-import apiRelatorios from "../api/api-relatorios";
+import apiRelatorios from "../api-relatorios";
 
 // Busca todos os relatórios de um paciente
 export const getRelatoriosPorPaciente = async (pacienteId) => {
