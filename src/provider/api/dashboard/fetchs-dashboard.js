@@ -1,4 +1,4 @@
-import api from "../api/api";
+import api from "../api";
 
 // Busca KPI de % pacientes inativos
 export const getKpiPorcentPacienteInativos = async () => {
