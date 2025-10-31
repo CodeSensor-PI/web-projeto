@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import "../ModalCadastrarRelatorio/Modal.css";
 import { FaDownload } from "react-icons/fa";
-import { getRelatorioPorPaciente, putAtualizarRelatorio, downloadRelatoriosPdf } from "../../../../provider/api/relatorios/fetchs-relatorios";
+import { getRelatorioPorPaciente, getRelatoriosPorPacientePagina, putAtualizarRelatorio, downloadRelatoriosPdf } from "../../../../provider/api/relatorios/fetchs-relatorios";
 import { getAgendamentosPorId } from "../../../../provider/api/agendamentos/fetchs-agendamentos";
 import { deleteRelatorio } from "../../../../provider/api/relatorios/fetchs-relatorios";
 import { IoTrashBinOutline } from "react-icons/io5";
@@ -13,6 +13,10 @@ import { confirmAction, responseMessage, errorMessage } from "../../../../utils/
 const ModalRelatorios = ({ onClose, pacienteId }) => {
     const [relatorios, setRelatorios] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(0);
+    const [size, setSize] = useState(3);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalElements, setTotalElements] = useState(0);
     const [editandoId, setEditandoId] = useState(null);
     const [textoEdicao, setTextoEdicao] = useState("");
     const [exportando, setExportando] = useState(false);
@@ -20,36 +24,70 @@ const ModalRelatorios = ({ onClose, pacienteId }) => {
 
     useEffect(() => {
         setLoading(true);
-        async function fetchRelatorios() {
-            const data = await getRelatorioPorPaciente(pacienteId);
-            const lista = Array.isArray(data) ? data : [];
-            setRelatorios(lista);
+        async function fetchRelatoriosPagina() {
+            try {
+                // Tenta buscar dados paginados; se o backend ainda retornar um array, faz fallback
+                const data = await getRelatoriosPorPacientePagina(pacienteId, page, size);
 
-            // Coleta IDs de sessão para buscar datas/horas reais do agendamento
-            const getSessaoId = (rel) => rel?.fkSessao ?? rel?.fk_sessao ?? rel?.sessaoId ?? rel?.idSessao ?? rel?.fk_sessao_id;
-            const ids = Array.from(new Set(lista.map((r) => getSessaoId(r)).filter(Boolean)));
-            if (ids.length > 0) {
-                try {
-                    const entries = await Promise.all(
-                        ids.map(async (id) => {
-                            try {
-                                const sessao = await getAgendamentosPorId(id);
-                                return [id, sessao];
-                            } catch (e) {
-                                console.warn('Falha ao buscar sessão', id, e);
-                                return [id, null];
-                            }
-                        })
-                    );
-                    setSessaoMap(Object.fromEntries(entries));
-                } catch (e) {
-                    console.warn('Falha ao montar mapa de sessões', e);
+                if (Array.isArray(data)) {
+                    // Backend não suporta paginação nesse caminho; usa lista inteira
+                    setRelatorios(data);
+                    setTotalPages(1);
+                    setTotalElements(data.length);
+                } else if (data && typeof data === 'object') {
+                    // Espera-se objeto de página: content, totalPages, totalElements, number
+                    const lista = Array.isArray(data.content) ? data.content : [];
+                    setRelatorios(lista);
+                    setTotalPages(typeof data.totalPages === 'number' ? data.totalPages : 1);
+                    setTotalElements(typeof data.totalElements === 'number' ? data.totalElements : lista.length);
+                } else {
+                    setRelatorios([]);
+                    setTotalPages(1);
+                    setTotalElements(0);
                 }
+
+                // Coleta IDs de sessão para buscar datas/horas reais do agendamento
+                const getSessaoId = (rel) => rel?.fkSessao ?? rel?.fk_sessao ?? rel?.sessaoId ?? rel?.idSessao ?? rel?.fk_sessao_id;
+                const ids = Array.from(new Set((Array.isArray(data?.content) ? data.content : Array.isArray(data) ? data : []).map((r) => getSessaoId(r)).filter(Boolean)));
+                if (ids.length > 0) {
+                    try {
+                        const entries = await Promise.all(
+                            ids.map(async (id) => {
+                                try {
+                                    const sessao = await getAgendamentosPorId(id);
+                                    return [id, sessao];
+                                } catch (e) {
+                                    console.warn('Falha ao buscar sessão', id, e);
+                                    return [id, null];
+                                }
+                            })
+                        );
+                        setSessaoMap(Object.fromEntries(entries));
+                    } catch (e) {
+                        console.warn('Falha ao montar mapa de sessões', e);
+                    }
+                }
+            } catch (err) {
+                console.error('Erro ao carregar relatórios paginados:', err);
+                // Fallback: tentar rota antiga sem paginação
+                try {
+                    const data2 = await getRelatorioPorPaciente(pacienteId);
+                    const lista = Array.isArray(data2) ? data2 : [];
+                    setRelatorios(lista);
+                    setTotalPages(1);
+                    setTotalElements(lista.length);
+                } catch (e) {
+                    console.error('Fallback falhou ao buscar relatórios:', e);
+                    setRelatorios([]);
+                    setTotalPages(1);
+                    setTotalElements(0);
+                }
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         }
-        fetchRelatorios();
-    }, [pacienteId]);
+        if (pacienteId) fetchRelatoriosPagina();
+    }, [pacienteId, page, size]);
 
     const formatPTBR = (d) => ({
         data: d.toLocaleDateString('pt-BR'),
@@ -226,6 +264,30 @@ const ModalRelatorios = ({ onClose, pacienteId }) => {
                             })}
                         </ul>
                         </div>
+
+                        {/* Controles de paginação estilo: botão anterior - indicador central - botão próxima; seletor de itens por página abaixo */}
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 16, marginTop: 12 }}>
+                            <button type="button" className="btn_secundario" onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page <= 0}>
+                                Anterior
+                            </button>
+
+                            <div style={{ fontSize: 14, padding: '6px 12px' }}>Página {Math.min(page + 1, Math.max(1, totalPages))} de {Math.max(1, totalPages)}</div>
+
+                            <button type="button" className="btn_secundario" onClick={() => setPage(p => Math.min(Math.max(0, totalPages - 1), p + 1))} disabled={page >= Math.max(0, totalPages - 1)}>
+                                Próxima
+                            </button>
+                        </div>
+
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, marginTop: 8 }}>
+                            <label style={{ fontSize: 14 }}>Itens por página:</label>
+                            <select value={size} onChange={(e) => { const v = parseInt(e.target.value, 10) || 6; setSize(v); setPage(0); }} style={{ borderRadius: 20, padding: '4px 8px', minWidth: 64 }}>
+                                <option value={3}>3</option>
+                                <option value={6}>6</option>
+                                <option value={9}>9</option>
+                                <option value={12}>12</option>
+                            </select>
+                        </div>
+
                         <button type="button" className="btn_primario flex" onClick={handleExport} disabled={exportando}>
                             <FaDownload />
                             {exportando ? "Exportando..." : "Exportar Relatórios"}
