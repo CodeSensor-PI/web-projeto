@@ -5,6 +5,7 @@ import { errorMessage, responseMessage } from "../../utils/alert.js";
 import "./login.css";
 import { FaArrowAltCircleLeft } from "react-icons/fa";
 import axios from "axios";
+import api from "../../provider/api/api.js";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -14,7 +15,7 @@ const LoginPage = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
+      const response = await api.post(
         "/psicologos/login",
         {
           email: email,
