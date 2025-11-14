@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { dedupeRequest, buildKeyFromUrl } from '../../../utils/requestDedupe';
 
 // GET Buscar Todos Relatorios
 export const getRelatorios = async () => {
@@ -38,10 +39,14 @@ export const getRelatorioPorPaciente = async (pacienteId) => {
 // Retorna o objeto de página do backend (ex: { content: [...], totalPages, totalElements, number, size })
 export const getRelatoriosPorPacientePagina = async (pacienteId, page = 0, size = 10) => {
     try {
-        const response = await axios.get(`/relatorios/paciente/${pacienteId}/pagina`, {
-            params: { page, size },
+        const url = `/relatorios/paciente/${pacienteId}/pagina`;
+        const params = { page, size };
+
+        const data = await dedupeRequest(buildKeyFromUrl(url, params), async () => {
+            return axios.get(url, { params }).then(r => r.data);
         });
-        return response.data;
+
+        return data;
     } catch (error) {
         console.error('Erro ao buscar relatórios paginados por paciente:', error);
         throw error;
