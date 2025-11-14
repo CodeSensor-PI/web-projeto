@@ -102,37 +102,42 @@ const AlterarSenhaCard = ({
           onChange={(e) => onChangeConfirmarSenha(e.target.value)}
           type="password"
         />
-        <div className="match-text" style={{ color: passwordsMatch ? 'var(--success-color, #16a34a)' : 'var(--danger-color, #ef4444)', fontWeight: 600 }}>
+        
+        {isEditing && (
+          <>
+            <div className="match-text" style={{ color: passwordsMatch ? 'var(--success-color, #16a34a)' : 'var(--danger-color, #ef4444)', fontWeight: 600 }}>
               {confirmarSenha ? (passwordsMatch ? 'Senhas coincidem' : 'Senhas não coincidem') : ''}
-        </div>
+            </div>
 
-        {/* Indicador de força e checklist */}
-        <div className="password-feedback" style={{ width: '100%', marginTop: 8 }}>
-          <div className="password-meter" aria-hidden>
-            <div className="meter-fill" style={{ width: `${(score / 5) * 100}%`, background: strengthColor }} />
-          </div>
-          <div className="strength-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 6, flexDirection: 'column' }}>
-            <div className="strength-text" style={{ color: strengthColor, fontWeight: 600, textTransform: 'capitalize' }}>{strength || '—'}</div>
-          </div>
+            {/* Indicador de força e checklist */}
+            <div className="password-feedback" style={{ width: '100%', marginTop: 8 }}>
+              <div className="password-meter" aria-hidden>
+                <div className="meter-fill" style={{ width: `${(score / 5) * 100}%`, background: strengthColor }} />
+              </div>
+              <div className="strength-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 6, flexDirection: 'column' }}>
+                <div className="strength-text" style={{ color: strengthColor, fontWeight: 600, textTransform: 'capitalize' }}>{strength || '—'}</div>
+              </div>
 
-          <ul className="requirements-list" style={{ marginTop: 8, paddingLeft: 18 }}>
-            <li style={{ color: satisfied.length ? 'var(--success-color, #16a34a)' : '#6b7280' }}>
-              {satisfied.length ? '✓' : '○'} Mínimo de {rules.minLength} caracteres
-            </li>
-            <li style={{ color: satisfied.upper ? 'var(--success-color, #16a34a)' : '#6b7280' }}>
-              {satisfied.upper ? '✓' : '○'} Uma letra maiúscula (A-Z)
-            </li>
-            <li style={{ color: satisfied.lower ? 'var(--success-color, #16a34a)' : '#6b7280' }}>
-              {satisfied.lower ? '✓' : '○'} Uma letra minúscula (a-z)
-            </li>
-            <li style={{ color: satisfied.number ? 'var(--success-color, #16a34a)' : '#6b7280' }}>
-              {satisfied.number ? '✓' : '○'} Um número (0-9)
-            </li>
-            <li style={{ color: satisfied.special ? 'var(--success-color, #16a34a)' : '#6b7280' }}>
-              {satisfied.special ? '✓' : '○'} Um caractere especial (!@#$...)
-            </li>
-          </ul>
-        </div>
+              <ul className="requirements-list" style={{ marginTop: 8, paddingLeft: 18 }}>
+                <li style={{ color: satisfied.length ? 'var(--success-color, #16a34a)' : '#6b7280' }}>
+                  {satisfied.length ? '✓' : '○'} Mínimo de {rules.minLength} caracteres
+                </li>
+                <li style={{ color: satisfied.upper ? 'var(--success-color, #16a34a)' : '#6b7280' }}>
+                  {satisfied.upper ? '✓' : '○'} Uma letra maiúscula (A-Z)
+                </li>
+                <li style={{ color: satisfied.lower ? 'var(--success-color, #16a34a)' : '#6b7280' }}>
+                  {satisfied.lower ? '✓' : '○'} Uma letra minúscula (a-z)
+                </li>
+                <li style={{ color: satisfied.number ? 'var(--success-color, #16a34a)' : '#6b7280' }}>
+                  {satisfied.number ? '✓' : '○'} Um número (0-9)
+                </li>
+                <li style={{ color: satisfied.special ? 'var(--success-color, #16a34a)' : '#6b7280' }}>
+                  {satisfied.special ? '✓' : '○'} Um caractere especial (!@#$...)
+                </li>
+              </ul>
+            </div>
+          </>
+        )}
       </div>
       <div className="inputs-button">
         <SaveButton icon="🔒" textContent="Alterar Senha" disabled={!canSave} onClick={onSavePassword} />
