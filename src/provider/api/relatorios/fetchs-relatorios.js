@@ -33,6 +33,21 @@ export const getRelatorioPorPaciente = async (pacienteId) => {
     }
 };
 
+// GET Buscar Relatórios por Paciente (Paginado)
+// Chama o endpoint esperado: /relatorios/paciente/{pacienteId}/pagina?page={page}&size={size}
+// Retorna o objeto de página do backend (ex: { content: [...], totalPages, totalElements, number, size })
+export const getRelatoriosPorPacientePagina = async (pacienteId, page = 0, size = 10) => {
+    try {
+        const response = await axios.get(`/relatorios/paciente/${pacienteId}/pagina`, {
+            params: { page, size },
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Erro ao buscar relatórios paginados por paciente:', error);
+        throw error;
+    }
+};
+
 // PUT Atualizar Relatório
 export const putAtualizarRelatorio = async (id, relatorio) => {
     try {

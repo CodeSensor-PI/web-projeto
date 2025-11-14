@@ -179,7 +179,7 @@ const Dashboard = () => {
         }
       >
         <div className="pacientes-background">
-          <div className="flex w-full justify-between gap-2">
+          <div className="h-[20%] flex w-full justify-between gap-2">
             {/* KPI dinâmica - Pacientes Agendados na Semana */}
             <div className="flex-1 flex-col items-center">
               <KPIsComponent
