@@ -1,4 +1,5 @@
 import apiRelatorios from "../api-relatorios";
+import { dedupeRequest, buildKeyFromUrl } from '../../../utils/requestDedupe';
 
 // GET Buscar Todos Relatorios
 export const getRelatorios = async () => {
@@ -33,6 +34,25 @@ export const getRelatorioPorPaciente = async (pacienteId) => {
     console.error("Erro ao buscar relatório por paciente:", error);
     throw error;
   }
+};
+
+// GET Buscar Relatórios por Paciente (Paginado)
+// Chama o endpoint esperado: /relatorios/paciente/{pacienteId}/pagina?page={page}&size={size}
+// Retorna o objeto de página do backend (ex: { content: [...], totalPages, totalElements, number, size })
+export const getRelatoriosPorPacientePagina = async (pacienteId, page = 0, size = 10) => {
+    try {
+        const url = `/relatorios/paciente/${pacienteId}/pagina`;
+        const params = { page, size };
+
+        const data = await dedupeRequest(buildKeyFromUrl(url, params), async () => {
+            return axios.get(url, { params }).then(r => r.data);
+        });
+
+        return data;
+    } catch (error) {
+        console.error('Erro ao buscar relatórios paginados por paciente:', error);
+        throw error;
+    }
 };
 
 // PUT Atualizar Relatório

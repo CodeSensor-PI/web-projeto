@@ -1,16 +1,25 @@
 import api from "../api";
+import { dedupeRequest, buildKeyFromUrl } from '../../../utils/requestDedupe';
 
 // Lista paginada de pacientes
 export const getPacientes = async (page = 1, size = 10) => {
   try {
     // Backend (Spring) normalmente usa paginação base 0; mapeamos UI (1-based) -> API (0-based)
     const pageApi = Math.max(0, parseInt(page, 10) - 1 || 0);
-    const response = await api.get(`/pacientes?page=${pageApi}&size=${size}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
+
+    const url = `/pacientes`;
+    const params = { page: pageApi, size };
+
+    // Use dedupeRequest para evitar chamadas duplicadas idênticas em curto espaço de tempo
+    const response = await dedupeRequest(buildKeyFromUrl(url, params), async () => {
+      return api.get(`${url}?page=${pageApi}&size=${size}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then(r => r.data);
     });
-    return response.data;
+
+    return response;
   } catch (error) {
     console.error("Erro ao encontrar pacientes:", error);
     throw error;

@@ -1,0 +1,46 @@
+/* SimpleButton styles follow the project's existing button patterns */
+.simple-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    margin: auto;
+    margin-top: 16px;
+
+    color: var(--WhiteFy);
+    background-color: var(--LightBlueFy);
+    border: var(--LightBlueFy) 2px solid;
+    border-radius: 2em;
+
+    cursor: pointer;
+    transition: ease-in-out 0.3s;
+}
+
+.simple-secondary-btn {
+    color: var(--DarkBlueFy, #1e3a8a);
+    background-color: var(--WhiteFy, #ffffff);
+    border: transparent;
+}
+
+.simple-btn:hover:not(.simple-btn-disabled) {
+    filter: brightness(0.95);
+    transform: translateY(-1px);
+}
+
+.simple-btn:active:not(.simple-btn-disabled) {
+    transform: translateY(0);
+}
+
+.simple-btn-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: var(--GrayLightFy, #9aa4ae);
+}
+
+/* small variant */
+.simple-btn.small {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.875rem;
+    border-radius: 6px;
+}
