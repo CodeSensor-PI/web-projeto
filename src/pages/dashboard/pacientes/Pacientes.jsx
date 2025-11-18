@@ -10,6 +10,9 @@ import Loading from '../components/Loading/Loading';
 
 
 
+// Map global para requisições em andamento (compartilhado entre instâncias do componente)
+const inFlightRequests = new Map();
+
 const Pacientes = () => {
   const [pacientes, setPacientes] = React.useState([]);
 
@@ -25,9 +28,34 @@ const Pacientes = () => {
 
   const carregarPagina = React.useCallback(async (p = page, s = size) => {
     setLoading(true);
+    const key = `${p}-${s}`;
+
     try {
-      const data = await getPacientes(p, s);
-      // Suporta tanto array simples quanto objeto paginado { content, totalPages }
+      // Se já existe uma requisição em andamento para a mesma chave, reutiliza a mesma promise
+      if (inFlightRequests.has(key)) {
+        const cachedPromise = inFlightRequests.get(key);
+        const data = await cachedPromise;
+        const lista = Array.isArray(data) ? data : Array.isArray(data?.content) ? data.content : [];
+        const tp = Number.isFinite(data?.totalPages) ? data.totalPages : null;
+        setTotalPages(tp);
+        setPacientes(lista);
+        setPacientesLista(lista);
+        return;
+      }
+
+      const fetchPromise = (async () => {
+        try {
+          const data = await getPacientes(p, s);
+          return data;
+        } catch (err) {
+          throw err;
+        }
+      })();
+
+      inFlightRequests.set(key, fetchPromise);
+
+      const data = await fetchPromise;
+
       const lista = Array.isArray(data) ? data : Array.isArray(data?.content) ? data.content : [];
       const tp = Number.isFinite(data?.totalPages) ? data.totalPages : null;
       setTotalPages(tp);
@@ -38,6 +66,8 @@ const Pacientes = () => {
       setPacientes([]);
       setPacientesLista([]);
     } finally {
+      // Limpa a chave do cache (caso tenha sido setada)
+      try { inFlightRequests.delete(`${p}-${s}`); } catch (e) {}
       setTimeout(() => setLoading(false), 300);
     }
   }, [page, size]);

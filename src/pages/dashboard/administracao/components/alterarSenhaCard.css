@@ -1,0 +1,37 @@
+.password-meter {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    height: 8px;
+    background: #f3f4f6;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb
+}
+
+.password-meter .meter-fill {
+    height: 100%;
+    width: 0;
+    background: #16a34a;
+    transition: width .2s ease, background .2s ease
+}
+
+.strength-text {
+    font-size: 13px;
+}
+
+.requirements-list {
+    font-size: 0.7em;
+    line-height: 1.6;
+    color: #6b7280;
+    width: 100%;
+}
+
+.requirements-list li {
+    list-style: none
+}
+
+.match-text {
+    font-size: 13px
+}
