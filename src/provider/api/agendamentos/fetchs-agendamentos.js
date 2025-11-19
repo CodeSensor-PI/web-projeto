@@ -1,98 +1,80 @@
-import axios from 'axios';
+import api from "../api";
 
+// Busca agendamento por ID
 export const getAgendamentosPorId = async (id) => {
-    try {
-        const response = await axios.get(`/sessoes/${id}`, {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Erro ao encontrar agendamento:', error);
-        throw error;
-    }
-}
+  try {
+    const response = await api.get(`/sessoes/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao encontrar agendamento:", error);
+    throw error;
+  }
+};
 
+// Busca todos os agendamentos
 export const getAgendamentos = async () => {
-    try {
-        const response = await axios.get('/sessoes', {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        console.log("response: ", response.data)
-        return response.data;
-    } catch (error) {
-        console.error('Erro ao encontrar agendamentos:', error);
-        throw error;
-    }
-}
+  try {
+    const response = await api.get("/sessoes");
+    console.log("response: ", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao encontrar agendamentos:", error);
+    throw error;
+  }
+};
 
+// Busca agendamentos por paciente
 export const getAgendamentosPorPaciente = async (id) => {
-    try {
-        const response = await axios.get(`/sessoes/pacientes/${id}`, {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Erro ao encontrar agendamentos por paciente:', error);
-        throw error;
-    }
-}
+  try {
+    const response = await api.get(`/sessoes/pacientes/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao encontrar agendamentos por paciente:", error);
+    throw error;
+  }
+};
 
+// Cria novo agendamento
 export const postAgendamento = async (agendamento) => {
-    try {
-        const response = await axios.post('/sessoes', agendamento, {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Erro ao criar agendamento:', error);
-        throw error;
-    }
-}
+  try {
+    const response = await api.post("/sessoes", agendamento);
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao criar agendamento:", error);
+    throw error;
+  }
+};
 
+// Atualiza agendamento existente
 export const putAgendamento = async (id, agendamento) => {
-    try {
-        const response = await axios.put(`/sessoes/${id}`, agendamento, {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Erro ao atualizar agendamento:', error);
-        throw error;
-    }
-}
+  try {
+    const response = await api.put(`/sessoes/${id}`, agendamento);
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao atualizar agendamento:", error);
+    throw error;
+  }
+};
 
 /**
  * Busca agendamentos por status
  * @param {string} status - Ex: "PENDENTE", "CONFIRMADA", "CANCELADA", "AGUARDANDO", "CONCLUIDA"
  */
 export const getAgendamentosPorStatus = async (status) => {
-    try {
-        const response = await axios.get(`/sessoes/status?status=${status}`, {
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        console.log("response: ", response.data)
-        return response.data;
-    } catch (error) {
-        console.error('Erro ao buscar agendamentos por status:', error);
-        throw error;
-    }
+  try {
+    const response = await api.get(`/sessoes/status?status=${status}`);
+    console.log("response: ", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao buscar agendamentos por status:", error);
+    throw error;
+  }
 };
 
+// Cancela agendamento
 export const cancelAgendamento = async (id) => {
     try {
-        const response = await axios.put(`/sessoes/cancelar/${id}`, {
+        const response = await api.put(`/sessoes/cancelar/${id}`, {
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -122,7 +104,7 @@ export const paginacaoGetAgendamentos = async ({ segunda, page, size = 40 }) => 
             params.append('page', String(pageApi));
         }
 
-        const response = await axios.get(`/sessoes/semana?${params.toString()}`, {
+        const response = await api.get(`/sessoes/semana?${params.toString()}`, {
             headers: {
                 'Content-Type': 'application/json',
             },

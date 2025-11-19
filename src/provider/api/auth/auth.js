@@ -1,8 +1,8 @@
-import axios from "axios";
+import api from "../api";
 
 export const postLogin = async (login) => {
   try {
-    const response = await axios.post("/login", login, {
+    const response = await api.post("/login", login, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -17,7 +17,7 @@ export const postLogin = async (login) => {
 
 export const postLogout = async () => {
   try {
-    const response = await axios.post(
+    const response = await api.post(
       "/logout",
       {},
       {

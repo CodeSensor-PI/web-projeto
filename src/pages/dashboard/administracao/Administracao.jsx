@@ -6,12 +6,12 @@ import {
   responseMessage,
   errorMessage,
   confirmCancelEdit,
-} from '../../../utils/alert';
-import { alterarSenha } from '../../../provider/api/alterar-senha-psi';
-import axios from 'axios';
-import MainComponent from '../components/MainComponent/MainComponent';
-import MenuLateralComponent from '../components/MenuLateral/MenuLateralComponent';
 
+} from "../../../utils/alert";
+import { alterarSenha } from "../../../provider/api/alterar-senha-psi";
+import api from "../../../provider/api/api";
+import MainComponent from "../components/MainComponent/MainComponent";
+import MenuLateralComponent from "../components/MenuLateral/MenuLateralComponent";
 import DadosGeraisCard from './components/DadosGeraisCard';
 import AlterarSenhaCard from './components/AlterarSenhaCard';
 
@@ -44,8 +44,8 @@ const Administracao = () => {
     const idUsuario = localStorage.getItem('idUsuario');
 
     if (idUsuario) {
-      axios
-        .get(`http://localhost:8080/psicologos/${idUsuario}`)
+      api
+        .get(`/psicologos/${idUsuario}`)
         .then((response) => {
           const { nome, email, telefone, crp } = response.data;
           setNome(nome || '');
@@ -91,7 +91,7 @@ const Administracao = () => {
     }
     const idDoUsuario = localStorage.getItem('idUsuario');
     try {
-      await axios.put(`/psicologos/${idDoUsuario}`, {
+      await api.put(`/psicologos/${idDoUsuario}`, {
         email,
         nome,
         telefone: removeMask(telefone),

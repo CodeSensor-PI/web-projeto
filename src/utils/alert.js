@@ -1,7 +1,7 @@
 import Swal from "sweetalert2";
 import "../App.css";
 import Cleave from "cleave.js";
-import axios from "axios";
+import api from "../provider/api/api"; // Corrigido o import
 
 export function errorMessage(mensagem, size = "small") {
   Swal.fire({
@@ -33,7 +33,7 @@ export function responseMessage(mensagem, size = "small") {
 
 export async function popupMessage(planoId) {
   try {
-    const { data } = await axios.get(`/planos`);
+    const { data } = await api.get(`/planos`);
 
     // Encontrar os valores de semanal e mensal no array retornado
     const semanal =
@@ -135,7 +135,7 @@ export async function popupMessage(planoId) {
 
           await Promise.all(
             planosAtualizados.map((plano) =>
-              axios.put(`/planos/${plano.id}`, {
+              api.put(`/planos/${plano.id}`, {
                 preco: plano.preco,
                 categoria: plano.categoria,
               })

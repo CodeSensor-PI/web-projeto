@@ -1,0 +1,4 @@
+window.env = {
+  VITE_API_URL: "",
+  VITE_RELATORIOS_URL: ""
+};
