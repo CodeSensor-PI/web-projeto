@@ -29,6 +29,7 @@ import Loading from "../../components/Loading/Loading";
 import EditButton from "../../components/EditButton/EditButton";
 import { FaFileArrowUp } from "react-icons/fa6";
 import ModalRelatorios from "../../components/ModalRelatorios/ModalRelatorios";
+import ModalCropImagem from "../../components/ModalCropImagem/ModalCropImagem";
 
 
 const EditarPaciente = () => {
@@ -49,6 +50,8 @@ const EditarPaciente = () => {
   const [telefone, setTelefone] = useState({});
   const [fotoSelecionada, setFotoSelecionada] = useState(null);
   const [previewFoto, setPreviewFoto] = useState(null);
+  const [showModalCrop, setShowModalCrop] = useState(false);
+  const [imagemParaCrop, setImagemParaCrop] = useState(null);
   // Removido: loadingRelatorio, relatorioExistente
 
   const diasSemana = [
@@ -205,14 +208,37 @@ const EditarPaciente = () => {
         errorMessage('A imagem deve ter no máximo 5MB.');
         return;
       }
-      setFotoSelecionada(arquivo);
-      // Criar preview
+      
+      // Criar preview para o modal de crop
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPreviewFoto(reader.result);
+        setImagemParaCrop(reader.result);
+        setShowModalCrop(true);
       };
       reader.readAsDataURL(arquivo);
     }
+  };
+
+  const handleSalvarImagemCortada = (imagemCortada) => {
+    setFotoSelecionada(imagemCortada);
+    
+    // Criar preview da imagem cortada
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreviewFoto(reader.result);
+    };
+    reader.readAsDataURL(imagemCortada);
+    
+    setShowModalCrop(false);
+    setImagemParaCrop(null);
+  };
+
+  const handleCancelarCrop = () => {
+    setShowModalCrop(false);
+    setImagemParaCrop(null);
+    // Limpar o input file
+    const fileInput = document.getElementById('foto-upload');
+    if (fileInput) fileInput.value = '';
   };
 
   const handleAtualizarPaciente = async () => {
@@ -655,6 +681,14 @@ const EditarPaciente = () => {
           />
         </form>
       </MainComponent>
+      
+      {showModalCrop && imagemParaCrop && (
+        <ModalCropImagem
+          imagemOriginal={imagemParaCrop}
+          onSalvar={handleSalvarImagemCortada}
+          onCancelar={handleCancelarCrop}
+        />
+      )}
     </div>
   );
 };
