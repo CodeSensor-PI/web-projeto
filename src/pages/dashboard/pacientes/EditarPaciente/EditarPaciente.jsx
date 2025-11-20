@@ -12,7 +12,8 @@ import {
   putDesativarPaciente,
   putPaciente,
   putEndereco,
-  buscarTelefonePorIdPaciente
+  buscarTelefonePorIdPaciente,
+  uploadFotoPaciente
 } from "../../../../provider/api/pacientes/fetchs-pacientes";
 import {
   confirmCancelEdit,
@@ -46,6 +47,8 @@ const EditarPaciente = () => {
   const [erro, setErro] = useState('');
   const [loading, setLoading] = useState(true); 
   const [telefone, setTelefone] = useState({});
+  const [fotoSelecionada, setFotoSelecionada] = useState(null);
+  const [previewFoto, setPreviewFoto] = useState(null);
   // Removido: loadingRelatorio, relatorioExistente
 
   const diasSemana = [
@@ -189,6 +192,29 @@ const EditarPaciente = () => {
     }
   };
 
+  const handleSelecionarFoto = (e) => {
+    const arquivo = e.target.files[0];
+    if (arquivo) {
+      // Validar tipo de arquivo
+      if (!arquivo.type.startsWith('image/')) {
+        errorMessage('Por favor, selecione apenas arquivos de imagem.');
+        return;
+      }
+      // Validar tamanho (máx 5MB)
+      if (arquivo.size > 5 * 1024 * 1024) {
+        errorMessage('A imagem deve ter no máximo 5MB.');
+        return;
+      }
+      setFotoSelecionada(arquivo);
+      // Criar preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewFoto(reader.result);
+      };
+      reader.readAsDataURL(arquivo);
+    }
+  };
+
   const handleAtualizarPaciente = async () => {
     try {
       const pacienteAtualizado = {
@@ -239,6 +265,27 @@ const EditarPaciente = () => {
         );
       }
 
+      // Upload de foto se houver uma selecionada (após salvar dados do paciente)
+      if (fotoSelecionada) {
+        try {
+          const resultado = await uploadFotoPaciente(id, fotoSelecionada);
+          const urlImagem = resultado.imagemUrl || resultado.imagem_url;
+          // Atualizar o estado do paciente com a URL retornada
+          setPaciente(prev => ({
+            ...prev,
+            imagemUrl: urlImagem,
+            imagem_url: urlImagem
+          }));
+          setPreviewFoto(null);
+          setFotoSelecionada(null);
+          console.log('Foto atualizada com sucesso:', urlImagem);
+        } catch (error) {
+          console.error('Erro ao fazer upload da foto:', error);
+          errorMessage('Paciente atualizado, mas houve erro ao salvar a foto.');
+          return;
+        }
+      }
+
       if (enderecoAtualizado) {
         responseMessage("Paciente e endereço atualizados com sucesso!");
         setTimeout(() => {
@@ -284,20 +331,30 @@ const EditarPaciente = () => {
 
             <div className="flex flex-col gap-4">
               <figure>
-                <div style={{ width: 120, height: 120, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  {paciente.imagemUrl && paciente.imagemUrl.trim() !== "" ? (
+                <div style={{ width: "150px", height: "150px", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
+                  {previewFoto || paciente.imagemUrl || paciente.imagem_url ? (
                     <img
-                      src={paciente.imagemUrl}
+                      src={previewFoto || paciente.imagemUrl || paciente.imagem_url}
                       alt="Foto do paciente"
-                      style={{ width: 120, height: 120, borderRadius: "50%", objectFit: "cover" }}
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
                     />
                   ) : (
                     <FaUser size={80} color="#bdbdbd" />
                   )}
                 </div>
-                <span>
-                  <span>Upload</span> imagem
-                </span>
+                <input
+                  type="file"
+                  id="foto-upload"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={handleSelecionarFoto}
+                  disabled={!isEditingGeneral}
+                />
+                <label htmlFor="foto-upload" style={{ cursor: isEditingGeneral ? "pointer" : "not-allowed" }}>
+                  <span>
+                    <span>Upload</span> imagem
+                  </span>
+                </label>
               </figure>
               <CheckBox
                 CheckboxValue={"ativo"}

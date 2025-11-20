@@ -163,3 +163,26 @@ export const buscarTelefonePorIdPaciente = async (idPaciente) => {
     throw error;
   }
 };
+
+/**
+ * Upload de foto do paciente
+ * @param {string | number} id - ID do paciente
+ * @param {File} arquivo - Arquivo de imagem
+ * @returns {Promise}
+ */
+export const uploadFotoPaciente = async (id, arquivo) => {
+  try {
+    const formData = new FormData();
+    formData.append('imagem', arquivo);
+
+    const response = await api.post(`/pacientes/${id}/imagem`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao fazer upload da foto:", error);
+    throw error;
+  }
+};
