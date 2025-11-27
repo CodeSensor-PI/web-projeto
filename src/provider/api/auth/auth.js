@@ -18,7 +18,7 @@ export const postLogin = async (login) => {
 export const postLogout = async () => {
   try {
     const response = await api.post(
-      "/logout",
+      "/auth/logout",
       {},
       {
         headers: {
