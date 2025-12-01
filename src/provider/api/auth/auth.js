@@ -33,3 +33,13 @@ export const postLogout = async () => {
     throw error;
   }
 };
+
+export const validateSession = async () => {
+  try {
+    const response = await api.get("/auth/validate", { withCredentials: true });
+    return response.data; //Retorna um texto do back-end
+  } catch (error) {
+    console.error("Erro ao validar sessão:", error);
+    throw error;
+  }
+};
