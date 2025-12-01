@@ -3,7 +3,6 @@ WORKDIR /app
 
 COPY package*.json ./
 RUN npm ci --include=dev
-
 COPY . .
 RUN npm run build
 
@@ -22,5 +21,5 @@ COPY default.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 
-CMD /bin/sh -c "envsubst '\$SERVER_ID' < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/server.conf && \
-               nginx -g 'daemon off;'"
+CMD sh -c "envsubst '\$SERVER_ID' < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/server.conf && \
+           exec nginx -g 'daemon off;'"
