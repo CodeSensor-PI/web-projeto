@@ -1,7 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import InputField from '../../components/InputField/InputField';
 import SaveButton from '../../components/SaveButton/SaveButton';
 import EditButton from '../../components/EditButton/EditButton';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 import './alterarSenhaCard.css';
 
@@ -16,6 +17,9 @@ const AlterarSenhaCard = ({
   onChangeConfirmarSenha,
   onSavePassword,
 }) => {
+  const [showSenhaAtual, setShowSenhaAtual] = useState(false);
+  const [showNovaSenha, setShowNovaSenha] = useState(false);
+  const [showConfirmarSenha, setShowConfirmarSenha] = useState(false);
   // Regras para senha forte
   const rules = useMemo(() => ({
     minLength: 12,
@@ -75,32 +79,68 @@ const AlterarSenhaCard = ({
       <div className="card-inputs">
         <InputField
           labelTitle="Senha Atual"
+          type={showSenhaAtual ? "text" : "password"}
           value={senha}
           disabled={!isEditing}
           width={'w-full'}
           containerWidth={'w-[90%]'}
           onChange={(e) => onChangeSenha(e.target.value)}
-          type="password"
+          showPasswordToggle={
+            isEditing ? (
+              <button
+                type="button"
+                onClick={() => setShowSenhaAtual(!showSenhaAtual)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 z-10"
+                aria-label={showSenhaAtual ? "Ocultar senha" : "Mostrar senha"}
+              >
+                {showSenhaAtual ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+              </button>
+            ) : null
+          }
         />
 
         <InputField
           labelTitle="Nova senha"
+          type={showNovaSenha ? "text" : "password"}
           value={novaSenha}
           width={'w-full'}
           containerWidth={'w-[90%]'}
           disabled={!isEditing}
           onChange={(e) => onChangeNovaSenha(e.target.value)}
-          type="password"
+          showPasswordToggle={
+            isEditing ? (
+              <button
+                type="button"
+                onClick={() => setShowNovaSenha(!showNovaSenha)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 z-10"
+                aria-label={showNovaSenha ? "Ocultar senha" : "Mostrar senha"}
+              >
+                {showNovaSenha ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+              </button>
+            ) : null
+          }
         />
 
         <InputField
           labelTitle="Confirmar senha"
+          type={showConfirmarSenha ? "text" : "password"}
           value={confirmarSenha}
           width={'w-full'}
           containerWidth={'w-[90%]'}
           disabled={!isEditing}
           onChange={(e) => onChangeConfirmarSenha(e.target.value)}
-          type="password"
+          showPasswordToggle={
+            isEditing ? (
+              <button
+                type="button"
+                onClick={() => setShowConfirmarSenha(!showConfirmarSenha)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 z-10"
+                aria-label={showConfirmarSenha ? "Ocultar senha" : "Mostrar senha"}
+              >
+                {showConfirmarSenha ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+              </button>
+            ) : null
+          }
         />
         
         {isEditing && (
