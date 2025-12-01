@@ -1,23 +1,25 @@
-# --- Build stage ---
+# ---- Build Stage ----
 FROM node:20 AS build
 WORKDIR /app
+
 COPY package*.json ./
 RUN npm ci --include=dev
+
 COPY . .
 RUN npm run build
 
-# --- Runtime stage ---
-FROM node:20-slim
-WORKDIR /app
 
-# Instala servidor estático leve
-RUN npm install -g serve
+FROM nginx:alpine
 
-# Copia o build gerado
-COPY --from=build /app/dist ./dist
+RUN rm -rf /usr/share/nginx/html/*
 
-# Copia env.js default (será override na EC2)
-COPY env.js ./dist/env.js
+COPY --from=build /app/dist /usr/share/nginx/html
 
-EXPOSE 3000
-CMD ["serve", "-s", "dist", "-l", "3000"]
+# Copia o env.js (substitui o que está no build)
+COPY env.js /usr/share/nginx/html/env.js
+
+# (Opcional) Copiar config nginx custom:
+# COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

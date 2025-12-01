@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - infra/workflow-deploy
+      - develop
 
 jobs:
   build-and-push:
