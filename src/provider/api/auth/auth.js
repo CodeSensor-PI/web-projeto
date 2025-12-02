@@ -18,7 +18,7 @@ export const postLogin = async (login) => {
 export const postLogout = async () => {
   try {
     const response = await api.post(
-      "/logout",
+      "/auth/logout",
       {},
       {
         headers: {
@@ -30,6 +30,16 @@ export const postLogout = async () => {
     return response.data;
   } catch (error) {
     console.error("Erro ao fazer logout:", error);
+    throw error;
+  }
+};
+
+export const validateSession = async () => {
+  try {
+    const response = await api.get("/auth/validate", { withCredentials: true });
+    return response.data; //Retorna um texto do back-end
+  } catch (error) {
+    console.error("Erro ao validar sessão:", error);
     throw error;
   }
 };

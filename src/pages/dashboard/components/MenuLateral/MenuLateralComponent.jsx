@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "../MenuLateral/menulateral.css";
 import Logo from "../../../../assets/images/icons/Logo.svg";
 import { Link, useLocation } from "react-router-dom";
+import { postLogout } from "../../../../provider/api/auth/auth";
 
 const MenuLateralComponent = () => {
   const location = useLocation();
@@ -169,10 +170,16 @@ const MenuLateralComponent = () => {
         className="btn-sair"
         id="btn-sair"
         aria-label="Sair"
-        onClick={() => {
-          localStorage.clear();
-          sessionStorage.clear();
-          window.location.href = "/desconectado";
+        onClick={async () => {
+          try {
+            await postLogout();
+          } catch (error) {
+            console.error("Logout falhou:", error);
+          } finally {
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.href = "/desconectado";
+          }
         }}
       >
         <svg
