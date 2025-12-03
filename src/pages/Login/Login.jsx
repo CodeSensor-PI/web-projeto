@@ -53,21 +53,15 @@ const LoginPage = () => {
       if (error.response) {
         const status = error.response.status;
         if (status === 429) {
-          // TODO - Preciso verificar como o backend está enviando o valor de tempo.
-          const serverMsg = error.response.data?.message;
-          const retryAfter = error.response.headers
-            ? error.response.headers["retry-after"] ||
-              error.response.headers["Retry-After"]
+          const retryAfter = error.response.data.ttl
+            ? error.response.data.ttl
             : null;
+
           const waitMsg = retryAfter
             ? `Tente novamente em ${retryAfter} segundos.`
             : "Tente novamente mais tarde.";
 
-          errorMessage(
-            serverMsg
-              ? `${serverMsg} ${waitMsg}`
-              : `Muitas tentativas. ${waitMsg}`
-          );
+          errorMessage(`Muitas tentativas. ${waitMsg}`, "small");
         } else {
           errorMessage("Usuário ou senha inválidos");
         }
