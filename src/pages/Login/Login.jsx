@@ -50,7 +50,24 @@ const LoginPage = () => {
         }
       }, 2300);
     } catch (error) {
-      errorMessage("Usuário ou senha inválidos");
+      if (error.response) {
+        const status = error.response.status;
+        if (status === 429) {
+          const retryAfter = error.response.data.ttl
+            ? error.response.data.ttl
+            : null;
+
+          const waitMsg = retryAfter
+            ? `Tente novamente em ${retryAfter} segundos.`
+            : "Tente novamente mais tarde.";
+
+          errorMessage(`Muitas tentativas. ${waitMsg}`, "small");
+        } else {
+          errorMessage("Usuário ou senha inválidos");
+        }
+      } else {
+        errorMessage("Erro de conexão. Tente novamente.");
+      }
       console.error("Erro ao autenticar usuário:", error);
     }
   };
