@@ -3,7 +3,7 @@ import { FaPen, FaPlus, FaAddressCard } from 'react-icons/fa';
 import './CardPaciente.css';
 
 const CardPaciente = ({ paciente, onVisualizar, onAgendar }) => {
-    const imgSrc = paciente?.img ? paciente.img : "https://placehold.co/100";
+    const imgSrc = paciente?.imagemUrl || paciente?.imagem_url || paciente?.img || "https://ui-avatars.com/api/?name=" + encodeURIComponent(paciente?.nome || "Usuario") + "&size=200&background=667eea&color=fff&bold=true";
     return (
         <div className="paciente-card">
             <div className="flex gap-2">

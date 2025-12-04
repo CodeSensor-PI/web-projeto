@@ -5,11 +5,14 @@ import InputField from '../../../dashboard/components/InputField/InputField';
 import SendButton from '../../../dashboard/components/SendButton/SendButton';
 import { errorMessage, responseMessage } from '../../../../utils/alert';
 import SaveButton from '../../../dashboard/components/SaveButton/SaveButton';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const AlterarSenha = () => {
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
   const [alterada, setAlterada] = useState(false);
+  const [showSenha, setShowSenha] = useState(false);
+  const [showConfirmarSenha, setShowConfirmarSenha] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -64,24 +67,48 @@ const AlterarSenha = () => {
         <p className="text-center">
           Digite sua nova senha abaixo.
         </p>
-        <InputField
-          type="password"
-          placeholder="Nova senha"
-          labelTitle="Nova senha"
-          value={senha}
-          onChange={e => setSenha(e.target.value)}
-          required
-          containerWidth="w-full"
-        />
-        <InputField
-          type="password"
-          placeholder="Confirme a nova senha"
-          labelTitle="Confirmar senha"
-          value={confirmarSenha}
-          onChange={e => setConfirmarSenha(e.target.value)}
-          required
-          containerWidth="w-full"
-        />
+        <div className="w-full">
+          <label className="block text-base font-medium mb-1">Nova senha</label>
+          <div className="relative">
+            <input
+              type={showSenha ? "text" : "password"}
+              placeholder="Nova senha"
+              value={senha}
+              onChange={e => setSenha(e.target.value)}
+              required
+              className="w-full p-3 border-2 border-gray-300 rounded"
+            />
+            <button
+              type="button"
+              onClick={() => setShowSenha(!showSenha)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              aria-label={showSenha ? "Ocultar senha" : "Mostrar senha"}
+            >
+              {showSenha ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+            </button>
+          </div>
+        </div>
+        <div className="w-full">
+          <label className="block text-base font-medium mb-1">Confirmar senha</label>
+          <div className="relative">
+            <input
+              type={showConfirmarSenha ? "text" : "password"}
+              placeholder="Confirme a nova senha"
+              value={confirmarSenha}
+              onChange={e => setConfirmarSenha(e.target.value)}
+              required
+              className="w-full p-3 border-2 border-gray-300 rounded"
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmarSenha(!showConfirmarSenha)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              aria-label={showConfirmarSenha ? "Ocultar senha" : "Mostrar senha"}
+            >
+              {showConfirmarSenha ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+            </button>
+          </div>
+        </div>
         {/* Indicador de força e checklist semelhante ao used em AlterarSenhaCard */}
         {(
           (() => {

@@ -25,17 +25,13 @@ const AdicionarPaciente = () => {
         }
 
         const planoMensalEscolhido = planoMensal ? 2 : 1;
-        const senha = "123456";
 
         const novoPaciente = {
             nome,
             email,
-            senha,
             status: "ATIVO",
             fkPlano: {
-                id: planoMensalEscolhido,
-                categoria: planoMensal ? "PLANO" : "AVULSO",
-                preco: planoMensal ? 1200 : 0,
+                id: planoMensalEscolhido
             },
         };
 
