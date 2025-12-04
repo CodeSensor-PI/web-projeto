@@ -57,6 +57,95 @@ Após autenticação, o usuário tem acesso a diversas funcionalidades para faci
    npm start
    ```
 
+## Deploy
+
+### Preparação para Deploy
+
+1. **Configure as variáveis de ambiente**
+   - Certifique-se de que os arquivos em `environments/` estejam configurados corretamente
+   - Defina a URL do backend de produção no arquivo `environment.prd.ts`
+
+2. **Build do projeto**
+   ```sh
+   npm run build
+   ```
+   Isso gerará os arquivos otimizados na pasta `dist/`
+
+### Deploy na AWS EC2
+
+**Deploy em EC2 com Nginx:**
+
+1. **Crie uma instância EC2**
+   - Amazon Linux 2 ou Ubuntu
+   - Tipo: t2.micro (free tier)
+   - Configure Security Group: HTTP (80), HTTPS (443), SSH (22)
+
+2. **Conecte via SSH e configure o servidor**
+   ```sh
+   # Atualize o sistema
+   sudo yum update -y  # Amazon Linux
+   # ou
+   sudo apt update && sudo apt upgrade -y  # Ubuntu
+
+   # Instale Nginx
+   sudo yum install nginx -y  # Amazon Linux
+   # ou
+   sudo apt install nginx -y  # Ubuntu
+
+   # Instale Node.js (para build)
+   curl -sL https://rpm.nodesource.com/setup_18.x | sudo bash -
+   sudo yum install nodejs -y
+   ```
+
+3. **Clone e build o projeto**
+   ```sh
+   cd /var/www
+   sudo git clone https://github.com/CodeSensor-PI/web-projeto.git
+   cd web-projeto
+   sudo npm install
+   sudo npm run build
+   ```
+
+4. **Configure Nginx**
+   ```sh
+   sudo nano /etc/nginx/conf.d/agendfy.conf
+   ```
+   
+   Adicione:
+   ```nginx
+   server {
+       listen 80;
+       server_name seu-dominio.com;  # ou IP público da EC2
+       root /var/www/web-projeto/dist;
+       index index.html;
+
+       location / {
+           try_files $uri $uri/ /index.html;
+       }
+   }
+   ```
+
+5. **Inicie o Nginx**
+   ```sh
+   sudo systemctl start nginx
+   sudo systemctl enable nginx
+   ```
+
+### Variáveis de Ambiente
+
+Certifique-se de configurar as seguintes variáveis no serviço de deploy escolhido:
+
+- `VITE_API_URL` - URL do backend em produção
+- Outras variáveis específicas do ambiente de produção conforme necessário
+
+### Pós-Deploy
+
+Após o deploy, verifique:
+- ✅ A aplicação está acessível pela URL fornecida
+- ✅ A integração com o backend está funcionando corretamente
+- ✅ As rotas estão funcionando (verifique configuração de SPA)
+- ✅ Os assets estão carregando corretamente
+
 ## Licença
 
 Este projeto está sob a licença MIT.
