@@ -13,7 +13,8 @@ import {
   putPaciente,
   putEndereco,
   buscarTelefonePorIdPaciente,
-  uploadFotoPaciente
+  uploadFotoPaciente,
+  getPacientesPorId
 } from "../../../../provider/api/pacientes/fetchs-pacientes";
 import {
   confirmCancelEdit,
@@ -77,7 +78,7 @@ const EditarPaciente = () => {
       setLoading(true);
       try {
         const [pacienteResponse, preferenciasResponse] = await Promise.all([
-          fetch(`/pacientes/${id}`).then((res) => res.json()),
+          getPacientesPorId(id),
           getPreferenciasPorId(id)
         ]);
 
