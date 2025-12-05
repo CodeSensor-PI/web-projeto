@@ -82,7 +82,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-push
     steps:
-      - name: 📡 Deploy via EC2 Publica
+      - name: Deploy via EC2 pública
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.EC2_IP }}
@@ -93,34 +93,54 @@ jobs:
             echo "🚀 DEPLOY AUTOMÁTICO NA PRIVADA VIA EC2 PÚBLICA"
             echo "=================================================="
 
-            # 1) LIMPAR SCRIPTS ANTIGOS
-            ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "rm -f /home/ubuntu/limpar.sh"
+            #################################
+            # 0) PREPARA CHAVE SSH
+            #################################
 
-            ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "cat > /home/ubuntu/limpar.sh" << 'EOF'
+            mkdir -p ~/.ssh
+
+            # Cria a chave SOMENTE se não existir
+            if [ ! -f ~/.ssh/chaveatividade.pem ]; then
+              echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/chaveatividade.pem
+              chmod 600 ~/.ssh/chaveatividade.pem
+              echo "🔐 chave criada no runner"
+            else
+              chmod 600 ~/.ssh/chaveatividade.pem
+              echo "🔐 chave já existia"
+            fi
+
+            #################################
+            # 1) LIMPA SCRIPTS ANTIGOS
+            #################################
+
+            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "rm -f ~/limpar.sh"
+
+            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "cat > ~/limpar.sh" << 'EOF'
             #!/bin/bash
             set -e
 
             echo '🛑 Parando containers do Agendfy...'
             sudo docker ps -a --format "{{.Names}}" | grep -E "front-web-|front-psi-" | while read name; do
-              echo "🛑 Removendo $name..."
               sudo docker rm -f "$name"
             done
 
             echo '🧹 Removendo imagens do Agendfy...'
             sudo docker images --format "{{.Repository}}:{{.Tag}}" | grep -E "agendfy/" | while read img; do
-              echo "🗑️ Removendo imagem $img..."
               sudo docker rmi -f "$img"
             done
 
             echo '🎉 Limpeza finalizada.'
             EOF
 
-            ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "chmod +x /home/ubuntu/limpar.sh"
+            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "chmod +x ~/limpar.sh"
 
-            # 2) DEPLOY SCRIPT
-            ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "rm -f /home/ubuntu/deploy-front.sh"
+            #################################
+            # 2) SCRIPT DEPLOY
+            #################################
 
-            ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "cat > /home/ubuntu/deploy-front.sh" << 'EOF'
+            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "rm -f ~/deploy-front.sh"
+
+            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "cat > ~/deploy-front.sh" << 'EOF'
             #!/bin/bash
             set -e
 
@@ -140,27 +160,30 @@ jobs:
               ["front-psi-2"]="${DOCKER_USERNAME}/web-psi-rizerio 3003"
             )
 
-            for name in "${!containers[@]}"; do
-              read -r image port <<< "${containers[$name]}"
+            for name in "\${!containers[@]}"; do
+              read -r image port <<< "\${containers[$name]}"
               sudo docker stop "$name" 2>/dev/null || true
               sudo docker rm "$name" 2>/dev/null || true
-              sudo docker pull "$image:latest"
+              sudo docker pull "\$image:latest"
               sudo docker run -d \
-                --name "$name" \
-                -e SERVER_ID="$name" \
-                -p "$port":80 \
-                -v "$ENV_FILE":/usr/share/nginx/html/env.js \
-                "$image:latest"
+                --name "\$name" \
+                -e SERVER_ID="\$name" \
+                -p "\$port":80 \
+                -v "\$ENV_FILE":/usr/share/nginx/html/env.js \
+                "\$image:latest"
             done
 
             echo "🎉 Deploy finalizado!"
             EOF
 
-            ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "chmod +x /home/ubuntu/deploy-front.sh"
+            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "chmod +x ~/deploy-front.sh"
 
-            # EXECUTAR TUDO
-            ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "/home/ubuntu/limpar.sh"
-            ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "/home/ubuntu/deploy-front.sh"
+            #################################
+            # 3) EXECUTA DEPLOY
+            #################################
+
+            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "~/limpar.sh"
+            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "~/deploy-front.sh"
 
             echo "=================================================="
             echo "🎉 DEPLOY CONCLUÍDO COM SUCESSO!"
