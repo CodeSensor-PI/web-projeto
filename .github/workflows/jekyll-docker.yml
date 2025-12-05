@@ -96,8 +96,10 @@ jobs:
             echo "🚀 DEPLOY INICIADO - VIA BASTION"
             echo "===================================="
 
-            ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "rm -f /home/ubuntu/limpar.sh"
-            ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "cat > /home/ubuntu/limpar.sh" << 'EOF'
+            # 1) LIMPAR SCRIPTS ANTIGOS
+            ssh -i chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "rm -f /home/ubuntu/limpar.sh"
+
+            ssh -i chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "cat > /home/ubuntu/limpar.sh" << 'EOF'
             #!/bin/bash
             set -e
 
@@ -112,13 +114,15 @@ jobs:
               echo "🗑️ Removendo imagem $img..."
               sudo docker rmi -f "$img"
             done
+
             echo '🎉 Limpeza finalizada.'
             EOF
 
-            ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "chmod +x /home/ubuntu/limpar.sh"
+            ssh -i chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "chmod +x /home/ubuntu/limpar.sh"
 
-            ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "rm -f /home/ubuntu/deploy-front.sh"
-            ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "cat > /home/ubuntu/deploy-front.sh" << 'EOF'
+            ssh -i chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "rm -f /home/ubuntu/deploy-front.sh"
+
+            ssh -i chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "cat > /home/ubuntu/deploy-front.sh" << 'EOF'
             #!/bin/bash
             set -e
 
@@ -154,10 +158,10 @@ jobs:
             echo "🎉 Deploy finalizado!"
             EOF
 
-            ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "chmod +x /home/ubuntu/deploy-front.sh"
+            ssh -i chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "chmod +x /home/ubuntu/deploy-front.sh"
 
-            ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "/home/ubuntu/limpar.sh"
-            ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "/home/ubuntu/deploy-front.sh"
+            ssh -i chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "/home/ubuntu/limpar.sh"
+            ssh -i chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "/home/ubuntu/deploy-front.sh"
 
             echo "===================================="
             echo "🎉 DEPLOY CONCLUÍDO COM SUCESSO!"
