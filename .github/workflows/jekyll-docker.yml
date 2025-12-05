@@ -88,18 +88,14 @@ jobs:
           host: ${{ secrets.EC2_IP }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
+          envs: EC2_IP,DOCKER_USERNAME # 👈 IMPORTANTÍSSIMO
           script: |
             echo "=================================================="
             echo "🚀 DEPLOY AUTOMÁTICO NA PRIVADA VIA EC2 PÚBLICA"
             echo "=================================================="
 
-            #################################
-            # 0) PREPARA CHAVE SSH
-            #################################
-
             mkdir -p ~/.ssh
 
-            # Cria a chave SOMENTE se não existir
             if [ ! -f ~/.ssh/chaveatividade.pem ]; then
               echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/chaveatividade.pem
               chmod 600 ~/.ssh/chaveatividade.pem
@@ -109,13 +105,13 @@ jobs:
               echo "🔐 chave já existia"
             fi
 
-            #################################
-            # 1) LIMPA SCRIPTS ANTIGOS
-            #################################
+            # ===============================
+            # LIMPA SCRIPTS ANTIGOS
+            # ===============================
 
             ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "rm -f ~/limpar.sh"
 
-            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "cat > ~/limpar.sh" << 'EOF'
+            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "cat > ~/limpar.sh" << EOF
             #!/bin/bash
             set -e
 
@@ -134,13 +130,13 @@ jobs:
 
             ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "chmod +x ~/limpar.sh"
 
-            #################################
-            # 2) SCRIPT DEPLOY
-            #################################
+            # ===============================
+            # SCRIPT DE DEPLOY
+            # ===============================
 
             ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "rm -f ~/deploy-front.sh"
 
-            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "cat > ~/deploy-front.sh" << 'EOF'
+            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "cat > ~/deploy-front.sh" << EOF
             #!/bin/bash
             set -e
 
@@ -148,22 +144,22 @@ jobs:
 
             cat > "$ENV_FILE" << EOX
             window.env = {
-              VITE_API_URL: "http://${EC2_IP}/api",
-              VITE_RELATORIOS_URL: "http://${EC2_IP}/relatorios"
+              VITE_API_URL: "http://$EC2_IP/api",
+              VITE_RELATORIOS_URL: "http://$EC2_IP/relatorios"
             };
             EOX
 
             declare -A containers=(
-              ["front-web-1"]="${DOCKER_USERNAME}/web-projeto 3000"
-              ["front-web-2"]="${DOCKER_USERNAME}/web-projeto 3002"
-              ["front-psi-1"]="${DOCKER_USERNAME}/web-psi-rizerio 3001"
-              ["front-psi-2"]="${DOCKER_USERNAME}/web-psi-rizerio 3003"
+              ["front-web-1"]="$DOCKER_USERNAME/web-projeto 3000"
+              ["front-web-2"]="$DOCKER_USERNAME/web-projeto 3002"
+              ["front-psi-1"]="$DOCKER_USERNAME/web-psi-rizerio 3001"
+              ["front-psi-2"]="$DOCKER_USERNAME/web-psi-rizerio 3003"
             )
 
             for name in "\${!containers[@]}"; do
-              read -r image port <<< "\${containers[$name]}"
-              sudo docker stop "$name" 2>/dev/null || true
-              sudo docker rm "$name" 2>/dev/null || true
+              read -r image port <<< "\${containers[\$name]}"
+              sudo docker stop "\$name" 2>/dev/null || true
+              sudo docker rm "\$name" 2>/dev/null || true
               sudo docker pull "\$image:latest"
               sudo docker run -d \
                 --name "\$name" \
@@ -178,9 +174,9 @@ jobs:
 
             ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "chmod +x ~/deploy-front.sh"
 
-            #################################
-            # 3) EXECUTA DEPLOY
-            #################################
+            # ===============================
+            # EXECUTA
+            # ===============================
 
             ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "~/limpar.sh"
             ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "~/deploy-front.sh"
