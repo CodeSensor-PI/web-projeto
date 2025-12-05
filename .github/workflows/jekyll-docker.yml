@@ -7,8 +7,32 @@ on:
       - develop
 
 jobs:
+  # ============================================
+  #   JOB DE LINT (CI)
+  # ============================================
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📦 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: 📥 Install dependencies
+        run: npm ci --include=dev
+
+      - name: 🔎 Run ESLint
+        run: npm run lint
+
+  # ============================================
+  #   JOB DE BUILD & PUSH (DEPENDE DO LINT)
+  # ============================================
   build-and-push:
     runs-on: ubuntu-latest
+    needs: lint
 
     steps:
       - name: 📦 Checkout repository
