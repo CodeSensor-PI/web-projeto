@@ -26,6 +26,10 @@ export default [
 
       "no-unused-vars": ["warn", { varsIgnorePattern: "^[A-Z_]" }],
 
+      "no-empty": "warn",
+
+      "no-useless-catch": "warn",
+
       "react-refresh/only-export-components": [
         "warn",
         { allowConstantExport: true },
