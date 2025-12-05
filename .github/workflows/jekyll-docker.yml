@@ -84,6 +84,9 @@ jobs:
     steps:
       - name: 📡 Deploy via EC2 Pública
         uses: appleboy/ssh-action@v0.1.10
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          EC2_IP: ${{ secrets.EC2_IP }}
         with:
           host: ${{ secrets.EC2_IP }}
           username: ${{ secrets.EC2_USER }}
@@ -95,67 +98,67 @@ jobs:
 
             ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "rm -f /home/ubuntu/limpar.sh"
             ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "cat > /home/ubuntu/limpar.sh" << 'EOF'
-#!/bin/bash
-set -e
+            #!/bin/bash
+            set -e
 
-echo '🛑 Parando containers do Agendfy...'
-sudo docker ps -a --format "{{.Names}}" | grep -E "front-web-|front-psi-" | while read name; do
-  echo "🛑 Removendo $name..."
-  sudo docker rm -f "$name"
-done
+            echo '🛑 Parando containers do Agendfy...'
+            sudo docker ps -a --format "{{.Names}}" | grep -E "front-web-|front-psi-" | while read name; do
+              echo "🛑 Removendo $name..."
+              sudo docker rm -f "$name"
+            done
 
-echo '🧹 Removendo imagens do Agendfy...'
-sudo docker images --format "{{.Repository}}:{{.Tag}}" | grep -E "agendfy/" | while read img; do
-  echo "🗑️ Removendo imagem $img..."
-  sudo docker rmi -f "$img"
-done
-echo '🎉 Limpeza finalizada.'
-EOF
+            echo '🧹 Removendo imagens do Agendfy...'
+            sudo docker images --format "{{.Repository}}:{{.Tag}}" | grep -E "agendfy/" | while read img; do
+              echo "🗑️ Removendo imagem $img..."
+              sudo docker rmi -f "$img"
+            done
+            echo '🎉 Limpeza finalizada.'
+            EOF
 
-          ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "chmod +x /home/ubuntu/limpar.sh"
+            ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "chmod +x /home/ubuntu/limpar.sh"
 
-          ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "rm -f /home/ubuntu/deploy-front.sh"
-          ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "cat > /home/ubuntu/deploy-front.sh" << 'EOF'
-#!/bin/bash
-set -e
+            ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "rm -f /home/ubuntu/deploy-front.sh"
+            ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "cat > /home/ubuntu/deploy-front.sh" << 'EOF'
+            #!/bin/bash
+            set -e
 
-ENV_FILE="/home/ubuntu/env.js"
+            ENV_FILE="/home/ubuntu/env.js"
 
-cat > "$ENV_FILE" << EOX
-window.env = {
-  VITE_API_URL: "http://${{ secrets.EC2_IP }}/api",
-  VITE_RELATORIOS_URL: "http://${{ secrets.EC2_IP }}/relatorios"
-};
-EOX
+            cat > "$ENV_FILE" << EOX
+            window.env = {
+              VITE_API_URL: "http://${{ secrets.EC2_IP }}/api",
+              VITE_RELATORIOS_URL: "http://${{ secrets.EC2_IP }}/relatorios"
+            };
+            EOX
 
-declare -A containers=(
-  ["front-web-1"]="${{ secrets.DOCKER_USERNAME }}/web-projeto 3000"
-  ["front-web-2"]="${{ secrets.DOCKER_USERNAME }}/web-projeto 3002"
-  ["front-psi-1"]="${{ secrets.DOCKER_USERNAME }}/web-psi-rizerio 3001"
-  ["front-psi-2"]="${{ secrets.DOCKER_USERNAME }}/web-psi-rizerio 3003"
-)
+            declare -A containers=(
+              ["front-web-1"]="${{ secrets.DOCKER_USERNAME }}/web-projeto 3000"
+              ["front-web-2"]="${{ secrets.DOCKER_USERNAME }}/web-projeto 3002"
+              ["front-psi-1"]="${{ secrets.DOCKER_USERNAME }}/web-psi-rizerio 3001"
+              ["front-psi-2"]="${{ secrets.DOCKER_USERNAME }}/web-psi-rizerio 3003"
+            )
 
-for name in "${!containers[@]}"; do
-  read -r image port <<< "${containers[$name]}"
-  sudo docker stop "$name" 2>/dev/null || true
-  sudo docker rm "$name" 2>/dev/null || true
-  sudo docker pull "$image:latest"
-  sudo docker run -d \
-    --name "$name" \
-    -e SERVER_ID="$name" \
-    -p "$port":80 \
-    -v "$ENV_FILE":/usr/share/nginx/html/env.js \
-    "$image:latest"
-done
+            for name in "${!containers[@]}"; do
+              read -r image port <<< "${containers[$name]}"
+              sudo docker stop "$name" 2>/dev/null || true
+              sudo docker rm "$name" 2>/dev/null || true
+              sudo docker pull "$image:latest"
+              sudo docker run -d \
+                --name "$name" \
+                -e SERVER_ID="$name" \
+                -p "$port":80 \
+                -v "$ENV_FILE":/usr/share/nginx/html/env.js \
+                "$image:latest"
+            done
 
-echo "🎉 Deploy finalizado!"
-EOF
+            echo "🎉 Deploy finalizado!"
+            EOF
 
-          ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "chmod +x /home/ubuntu/deploy-front.sh"
+            ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "chmod +x /home/ubuntu/deploy-front.sh"
 
-          ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "/home/ubuntu/limpar.sh"
-          ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "/home/ubuntu/deploy-front.sh"
+            ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "/home/ubuntu/limpar.sh"
+            ssh -o StrictHostKeyChecking=no ubuntu@10.0.0.253 "/home/ubuntu/deploy-front.sh"
 
-          echo "===================================="
-          echo "🎉 DEPLOY CONCLUÍDO COM SUCESSO!"
-          echo "===================================="
+            echo "===================================="
+            echo "🎉 DEPLOY CONCLUÍDO COM SUCESSO!"
+            echo "===================================="
