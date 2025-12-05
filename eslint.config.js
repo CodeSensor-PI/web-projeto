@@ -30,6 +30,8 @@ export default [
 
       "no-useless-catch": "warn",
 
+      "no-redeclare": "warn",
+
       "react-refresh/only-export-components": [
         "warn",
         { allowConstantExport: true },
