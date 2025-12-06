@@ -1,54 +1,81 @@
-import React, { useState } from 'react';
-import './EsqueceuSenha.css';
-import MainComponent from '../../dashboard/components/MainComponent/MainComponent';
-import InputField from '../../dashboard/components/InputField/InputField';
-import { errorMessage, responseMessage } from '../../../utils/alert';
-import SendButton from '../../dashboard/components/SendButton/SendButton';
+import { useState } from "react";
+import Titulo from "../../../components/Titulo/Titulo";
+import { errorMessage, responseMessage } from "../../../utils/alert";
+import { solicitarRecuperacaoSenha } from "../../../provider/api/password-reset";
+import SendButton from "../../dashboard/components/SendButton/SendButton";
+import "./EsqueceuSenha.css";
 
 const EsqueceuSenha = () => {
-    const [email, setEmail] = useState('');
-    const [enviado, setEnviado] = useState(false);
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (!email || !/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-            errorMessage('Digite um e-mail válido.');
-            return;
-        }
-        // Aqui você faria a chamada para a API de recuperação de senha
-        setEnviado(true);
-        responseMessage('Se o e-mail estiver cadastrado, você receberá as instruções em instantes.');
-        setTimeout(() => {
-            window.location.href = '/login/esqueceu-senha/confirmar-codigo'; // Redireciona para a página de confirmação de código
-        }, 2000);
-    };
+  const handleSolicitarCodigo = async (e) => {
+    e.preventDefault();
 
-    return (
-        <div className="esqueceu-senha-container">
-            <form className="esqueceu-senha-form flex flex-col gap-4 items-center justify-center" onSubmit={handleSubmit}>
-                <h2 className="text-xl font-bold">Esqueceu sua senha?</h2>
-                <p className="text-center">Digite seu e-mail cadastrado para receber as instruções de redefinição.</p>
-                <InputField
-                    type="email"
-                    placeholder="Seu e-mail"
-                    labelTitle="E-mail"
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                    required
-                    containerWidth="w-full"
-                />
-                <SendButton
-                    textContent="Enviar"
-                    type="submit"
-                />
-                {enviado && (
-                    <span className="sucesso-msg text-green-600 text-center">
-                        Se o e-mail estiver cadastrado, você receberá as instruções em instantes.
-                    </span>
-                )}
-            </form>
+    if (!email || !email.includes("@")) {
+      errorMessage("Por favor, insira um email válido.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Como é o sistema web para psicólogos, sempre usar 'psicologo'
+      await solicitarRecuperacaoSenha(email, 'psicologo');
+      responseMessage("Código enviado para o seu email!");
+      
+      setTimeout(() => {
+        window.location.href = `/login/esqueceu-senha/confirmar-codigo?email=${encodeURIComponent(email)}`;
+      }, 2300);
+    } catch (error) {
+      console.error("Erro ao solicitar recuperação de senha:", error);
+      errorMessage("Erro ao enviar código. Verifique o email e tente novamente.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="esqueceu-senha-page">
+      <div className="esqueceu-senha-container">
+        <p
+          className="esqueceu-senha-voltar"
+          onClick={() => (window.location.href = "/login")}
+        >
+          Voltar para Login
+        </p>
+
+        <div className="esqueceu-senha-title">
+          <Titulo titulo="Esqueceu a senha?" />
+          <p>Digite seu email para receber o código de recuperação</p>
         </div>
-    );
+
+        <form onSubmit={handleSolicitarCodigo} className="esqueceu-senha-form">
+          <div className="esqueceu-senha-input">
+            <label htmlFor="email">Endereço de Email</label>
+            <input
+              type="email"
+              name="email"
+              id="input_email"
+              placeholder="seu@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="esqueceu-senha-botao">
+            <SendButton
+              textContent={loading ? "Enviando..." : "Enviar Código"}
+              onClick={handleSolicitarCodigo}
+              disabled={loading}
+              type="submit"
+            />
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 };
 
 export default EsqueceuSenha;

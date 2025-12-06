@@ -1,0 +1,194 @@
+.alterar-senha-page {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    background: #ffffff;
+    padding: 0 4em;
+    justify-content: center;
+    align-items: center;
+}
+
+.alterar-senha-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: auto;
+    width: min(600px, 90vw);
+    max-width: 600px;
+    gap: 1em;
+    padding: 3em;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    border: 1px solid #e5e7eb;
+}
+
+.alterar-senha-title {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.alterar-senha-title p {
+    font-size: 0.95em;
+    color: #697077;
+}
+
+.alterar-senha-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    gap: 20px;
+}
+
+.alterar-senha-input {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: start;
+    width: 100%;
+    gap: 0.5em;
+    font-weight: 300;
+}
+
+.alterar-senha-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.alterar-senha-input input {
+    background-color: #F2F4F8;
+    border-radius: 24px;
+    height: 2.7em;
+    width: 100%;
+    padding: 0 3em 0 1em;
+    border: none;
+    outline: none;
+}
+
+.alterar-senha-input input:focus {
+    border: 2px solid #3b82f6;
+}
+
+.alterar-senha-eye-button {
+    position: absolute;
+    right: 1em;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #697077;
+    transition: color 0.3s;
+}
+
+.alterar-senha-eye-button:hover {
+    color: #3b82f6;
+}
+
+.alterar-senha-voltar {
+    align-self: center;
+    text-align: center;
+    color: #3b82f6;
+    font-size: 1em;
+    font-weight: bold;
+    margin-bottom: 1em;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.alterar-senha-voltar:hover {
+    color: #2563eb;
+}
+
+.alterar-senha-match-text {
+    font-size: 0.9em;
+    font-weight: 500;
+    text-align: center;
+    margin-top: -0.5em;
+}
+
+.alterar-senha-password-feedback {
+    width: 100%;
+    margin-top: 0.5em;
+}
+
+.alterar-senha-password-meter {
+    width: 100%;
+    height: 0.5em;
+    background-color: #e5e7eb;
+    border-radius: 0.25em;
+    overflow: hidden;
+    margin-bottom: 0.5em;
+}
+
+.alterar-senha-meter-fill {
+    height: 100%;
+    transition: width 0.3s ease, background-color 0.3s ease;
+    border-radius: 0.25em;
+}
+
+.alterar-senha-strength-text {
+    font-size: 0.9em;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 1em;
+    text-transform: capitalize;
+}
+
+.alterar-senha-requirements-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.85em;
+}
+
+.alterar-senha-requirements-list li {
+    padding: 0.3em 0;
+    transition: color 0.3s ease;
+}
+
+.alterar-senha-botao {
+    margin-top: 1em;
+}
+
+@media (max-width: 768px) {
+    .alterar-senha-page {
+        padding: 2em;
+    }
+    
+    .alterar-senha-container {
+        width: 90vw;
+        padding: 2em 1.5em;
+        gap: 0.8em;
+    }
+    
+    .alterar-senha-input input {
+        height: 2.5em;
+        padding: 0 2.5em 0 1em;
+    }
+    
+    .alterar-senha-eye-button {
+        right: 0.8em;
+    }
+}
+
+@media (max-width: 480px) {
+    .alterar-senha-container {
+        padding: 1.5em 1em;
+    }
+    
+    .alterar-senha-input input {
+        height: 2.3em;
+        font-size: 0.95em;
+    }
+    
+    .alterar-senha-requirements-list {
+        font-size: 0.8em;
+    }
+}
