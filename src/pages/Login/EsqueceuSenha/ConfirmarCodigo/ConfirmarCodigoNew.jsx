@@ -72,7 +72,7 @@ const ConfirmarCodigo = () => {
     setLoading(true);
 
     try {
-      await validarCodigoRecuperacao(email, codigoCompleto, 'psicologo');
+      await validarCodigoRecuperacao(email, codigoCompleto);
       responseMessage("Código validado com sucesso!");
       
       setTimeout(() => {
@@ -92,15 +92,15 @@ const ConfirmarCodigo = () => {
   };
 
   return (
-    <div className="confirmar-codigo-page">
-      <div className="confirmar-codigo-container">
-        <div className="confirmar-codigo-title">
+    <div className="confirmar-codigo">
+      <div className="container">
+        <div className="title">
           <Titulo titulo="Confirme o Código" />
           <p>Digite o código de 6 dígitos que enviamos para o seu e-mail.</p>
         </div>
 
-        <form onSubmit={handleValidarCodigo} className="confirmar-codigo-form">
-          <div className="confirmar-codigo-inputs">
+        <form onSubmit={handleValidarCodigo} className="form">
+          <div className="codigo-inputs">
             {codigo.map((digit, index) => (
               <input
                 key={index}
@@ -112,12 +112,12 @@ const ConfirmarCodigo = () => {
                 onChange={(e) => handleChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 onPaste={handlePaste}
-                className="confirmar-codigo-digit-input"
+                className="digit-input"
               />
             ))}
           </div>
 
-          <div className="confirmar-codigo-botao">
+          <div className="botao">
             <SendButton
               textContent={loading ? "Confirmando..." : "Confirmar"}
               onClick={handleValidarCodigo}
@@ -126,7 +126,7 @@ const ConfirmarCodigo = () => {
             />
           </div>
 
-          <p className="confirmar-codigo-nao-recebi">Não recebi o código</p>
+          <p className="nao-recebi">Não recebi o código</p>
         </form>
       </div>
     </div>
