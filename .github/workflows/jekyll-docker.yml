@@ -83,6 +83,7 @@ jobs:
     needs: build-and-push
     env:
       EC2_IP: ${{ secrets.EC2_IP }}
+      EC2_PRIVATE_IP: ${{ secrets.EC2_PRIVATE_IP }}
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
 
     steps:
@@ -92,7 +93,7 @@ jobs:
           host: ${{ secrets.EC2_IP }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          envs: EC2_IP,DOCKER_USERNAME
+          envs: EC2_IP,EC2_PRIVATE_IP,DOCKER_USERNAME
           script: |
             echo "=================================================="
             echo "🚀 DEPLOY AUTOMÁTICO NA PRIVADA VIA EC2 PÚBLICA"
@@ -113,9 +114,9 @@ jobs:
             # LIMPAR SCRIPTS NA PRIVADA
             #################################
 
-            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "rm -f ~/limpar.sh"
+            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@$EC2_PRIVATE_IP "rm -f ~/limpar.sh"
 
-            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "cat > ~/limpar.sh" << 'EOF'
+            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@$EC2_PRIVATE_IP "cat > ~/limpar.sh" << 'EOF'
             #!/bin/bash
             set -e
 
@@ -128,15 +129,15 @@ jobs:
             done
             EOF
 
-            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "chmod +x ~/limpar.sh"
+            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@$EC2_PRIVATE_IP "chmod +x ~/limpar.sh"
 
             #################################
             # SCRIPT DEPLOY
             #################################
 
-            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "rm -f ~/deploy-front.sh"
+            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@$EC2_PRIVATE_IP "rm -f ~/deploy-front.sh"
 
-            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "cat > ~/deploy-front.sh" << EOF
+            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@$EC2_PRIVATE_IP "cat > ~/deploy-front.sh" << EOF
             #!/bin/bash
             set -e
 
@@ -170,11 +171,11 @@ jobs:
             done
             EOF
 
-            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "chmod +x ~/deploy-front.sh"
+            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@$EC2_PRIVATE_IP "chmod +x ~/deploy-front.sh"
 
             #################################
             # EXECUTA DEPLOY
             #################################
 
-            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "~/limpar.sh"
-            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@10.0.0.186 "~/deploy-front.sh"
+            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@$EC2_PRIVATE_IP "~/limpar.sh"
+            ssh -i ~/.ssh/chaveatividade.pem -o StrictHostKeyChecking=no ubuntu@$EC2_PRIVATE_IP "~/deploy-front.sh"
