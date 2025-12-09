@@ -22,7 +22,7 @@
     "react-image-crop": "^11.0.7",
     "react-input-mask-next": "^3.0.0-alpha.12",
     "react-router-dom": "^7.4.0",
-    "sweetalert2": "^11.17.2",
+    "sweetalert2": "^11.22.4",
     "swiper": "^11.2.5",
     "tailwindcss": "^4.0.14"
   },
