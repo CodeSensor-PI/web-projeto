@@ -1,35 +1,40 @@
 import React from "react";
-import ImgHome from "../../../assets/images/office_guy.png";
 import "./home.css";
 
+
+
 const HomeComponent = () => {
+
+  const redirecionarLogin = () => {
+    window.location.href = "/login";
+  };
+
   return (
     <section
       className="section-home flex flex-col md:flex-row justify-between items-center p-12 md:p-40 bg-gradient-to-r from-white to-darkBlueFy mt-16"
       id="home"
     >
-      <div>
+      <div className="text-home text-center md:text-left">
         <h1 className="text-4xl font-bold">
-          Gerencie a agenda de sua empresa conosco!
+          Gerencie a agenda de sua clínica conosco!
         </h1>
         <p className="mt-4 text-lg">
-          Aumente a eficiência de seu negócio com a nossa tecnologia em
+          Aumente a eficiência de sua clínica com a nossa tecnologia em
           gerenciamento de agendamentos.
         </p>
         <div className="div-buttons flex gap-4 mt-4">
-          <button className="btn_primario bg-lightBlueFy border-2 border-lightBlueFy text-white p-4 font-medium text-sm transition duration-300 ease-in-out hover:bg-darkestBlueFy">
+          <button className="btn_primario text-5xl w-[10em]"
+          onClick={() => redirecionarLogin()}
+          >
             Entrar
           </button>
-          <button className="btn_secundario border-2 border-lightBlueFy text-lightBlueFy p-4 font-medium text-sm transition duration-300 ease-in-out hover:bg-lightBlueFy hover:text-white">
+          <button className="btn_secundario"
+          onClick={() => window.location.href = "#contato"}
+          >
             Saiba Mais
           </button>
         </div>
       </div>
-      <img
-        src={ImgHome}
-        className="w-128 rounded-lg border-2 border-white mt-8 md:mt-0"
-        alt=""
-      />
     </section>
   );
 };

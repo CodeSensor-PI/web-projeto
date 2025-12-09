@@ -1,7 +1,7 @@
 import Swal from "sweetalert2";
 import "../App.css";
 import Cleave from "cleave.js";
-import axios from "axios";
+import api from "../provider/api/api"; // Corrigido o import
 
 export function errorMessage(mensagem, size = "small") {
   Swal.fire({
@@ -33,7 +33,7 @@ export function responseMessage(mensagem, size = "small") {
 
 export async function popupMessage(planoId) {
   try {
-    const { data } = await axios.get(`/planos`);
+    const { data } = await api.get(`/planos`);
 
     // Encontrar os valores de semanal e mensal no array retornado
     const semanal =
@@ -44,7 +44,7 @@ export async function popupMessage(planoId) {
     Swal.fire({
       title: '<span style="color: #1B66A4;">Editar Valores do Plano</span>',
       html: `
-        <label for="semana" style="display: block; text-align: left; margin-top: 10px; color: #000000;">Semanal:</label>
+        <label for="avulso" style="display: block; text-align: left; margin-top: 10px; color: #000000;">Avulso:</label>
         <input id="semana" class="swal2-input input-app" placeholder="R$ 0,00" value="${semanal}">
         <label for="mensal" style="display: block; text-align: left; margin-top: 10px; color: #000000;">Mensal:</label>
         <input id="mensal" class="swal2-input input-app" placeholder="R$ 0,00" value="${mensal}">
@@ -58,7 +58,7 @@ export async function popupMessage(planoId) {
       customClass: {
         popup: "swal-medium",
         confirmButton: "btn_primario",
-        cancelButton: "btn_secundario",
+        cancelButton: "btn_secundario-editar-plano",
       },
       didOpen: () => {
         const semanaInput = document.getElementById("semana");
@@ -135,7 +135,7 @@ export async function popupMessage(planoId) {
 
           await Promise.all(
             planosAtualizados.map((plano) =>
-              axios.put(`/planos/${plano.id}`, {
+              api.put(`/planos/${plano.id}`, {
                 preco: plano.preco,
                 categoria: plano.categoria,
               })
@@ -171,6 +171,31 @@ export function confirmCancelEdit(titulo, message, size = "small") {
     showCancelButton: true,
     confirmButtonText: "Sim, cancelar",
     cancelButtonText: "Continuar editando",
+    customClass: {
+      popup: `swal-${size}`,
+      confirmButton: "btn_primario",
+      cancelButton: "btn_secundario",
+    },
+    backdrop: false,
+  });
+}
+
+// Confirmação padronizada (genérica) com botões do tema
+export function confirmAction({
+  title,
+  message,
+  confirmText = "Confirmar",
+  cancelText = "Cancelar",
+  size = "small",
+  icon = "question",
+} = {}) {
+  return Swal.fire({
+    title,
+    text: message,
+    icon,
+    showCancelButton: true,
+    confirmButtonText: confirmText,
+    cancelButtonText: cancelText,
     customClass: {
       popup: `swal-${size}`,
       confirmButton: "btn_primario",

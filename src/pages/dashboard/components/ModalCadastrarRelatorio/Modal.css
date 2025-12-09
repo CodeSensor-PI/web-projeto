@@ -1,0 +1,92 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+  width: 50vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+
+  textarea{
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 0.5em;
+    font-size: 1rem;
+    resize: none;
+  }
+}
+
+/* Área rolável para listas volumosas dentro do modal */
+.modal-list {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 8px; /* espaço para a barra de rolagem */
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.cardModal{
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1em;
+  margin-bottom: 1em;
+  display: flex;
+
+}
+
+.btn_deletar{
+  color: var(--RedAlertFy);
+	border: none;
+	border-radius: 16px;
+	padding: 1em;
+  background-color: var(--TrueWhiteFy);
+	font-size: 12px;
+	cursor: pointer;
+	transition: background-color 0.3s;
+
+  &:hover {
+    color: var(--TrueWhiteFy);
+    background-color: var(--RedAlertFy);
+  }
+}
+
+.btn_editar{
+  color: var(--LightBlueFy);
+  /* border: 1px solid var(--DarkBlueFy); */
+  border-radius: 16px;
+  padding: 1em;
+  background-color: var(--TrueWhiteFy);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn_editar:hover{
+  color: var(--TrueWhiteFy);
+  background-color: var(--DarkBlueFy);
+}
+

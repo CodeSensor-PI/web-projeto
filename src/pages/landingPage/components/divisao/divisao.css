@@ -18,3 +18,13 @@
         }
     }
 }
+
+.azul{
+    background-color: var(--DarkestBlueFy);
+    color: var(--WhiteFy);
+}
+
+.azul-claro{
+    background-color: var(--DarkBlueFy);
+    color: var(--WhiteFy);
+}

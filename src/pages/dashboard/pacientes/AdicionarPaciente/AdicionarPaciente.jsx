@@ -6,7 +6,7 @@ import InputField from '../../components/InputField/InputField';
 import SaveButton from '../../components/SaveButton/SaveButton';
 import MainComponent from '../../components/MainComponent/MainComponent';
 import { postPaciente } from '../../../../provider/api/pacientes/fetchs-pacientes';
-import { postPreferencia } from '../../../../provider/api/preferencias/fetchs-preferencias'; 
+import { postPreferencia } from '../../../../provider/api/preferencias/fetchs-preferencias';
 import { errorMessage, responseMessage } from '../../../../utils/alert';
 
 const AdicionarPaciente = () => {
@@ -24,18 +24,14 @@ const AdicionarPaciente = () => {
             return;
         }
 
-        const planoMensalEscolhido = planoMensal ? 2 : 1; 
-        const senha = "123456"; 
+        const planoMensalEscolhido = planoMensal ? 2 : 1;
 
         const novoPaciente = {
             nome,
             email,
-            senha,
             status: "ATIVO",
             fkPlano: {
-                id: planoMensalEscolhido,
-                categoria: planoMensal ? "PLANO" : "AVULSO",
-                preco: planoMensal ? 1200 : 0, 
+                id: planoMensalEscolhido
             },
         };
 
@@ -87,11 +83,13 @@ const AdicionarPaciente = () => {
                     <main className='div-add-paciente'>
                         <h2>Dados Do Paciente:</h2>
                         <section>
-                            <div className='flex gap-3'>
+
+                            <div className='w-full justify-center flex-col items-center flex gap-4 mb-4'>
                                 <InputField
                                     labelTitle={'Nome'}
                                     value={nome}
                                     width={'w-full'}
+                                    containerWidth={'w-[80%]'}
                                     placeholder={'Nome do paciente'}
                                     onChange={(e) => setNome(e.target.value)}
                                     required
@@ -101,12 +99,13 @@ const AdicionarPaciente = () => {
                                     type={'email'}
                                     value={email}
                                     width={'w-full'}
+                                    containerWidth={'w-[80%]'}
                                     placeholder={'E-mail do paciente'}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
                                 />
                             </div>
-                            <div className='flex gap-3'>
+                            <div className='w-full justify-center flex-col items-center flex gap-4 mb-4'>
                                 <div className="select-container">
                                     <label htmlFor="diaConsultas">Dia de Consultas</label>
                                     <select
@@ -145,7 +144,9 @@ const AdicionarPaciente = () => {
                                         })}
                                     </select>
                                 </div>
+
                             </div>
+
                             <CheckBox
                                 CheckboxValue={'mensal'}
                                 labelTitle={'Plano Mensal'}

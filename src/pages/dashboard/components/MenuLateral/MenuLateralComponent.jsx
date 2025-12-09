@@ -1,14 +1,17 @@
 import React, { useState } from "react";
-import "./MenuLateral.css";
+import "../MenuLateral/menulateral.css";
 import Logo from "../../../../assets/images/icons/Logo.svg";
 import { Link, useLocation } from "react-router-dom";
+import { postLogout } from "../../../../provider/api/auth/auth";
 
 const MenuLateralComponent = () => {
   const location = useLocation();
   const [expandido, setExpandido] = useState(false);
 
   return (
-    <div className={`menu-lateral flex flex-col${expandido ? " expandido" : ""}`}>
+    <div
+      className={`menu-lateral flex flex-col${expandido ? " expandido" : ""}`}
+    >
       <section className="logo">
         <Link to="/dashboard">
           <img src={Logo} alt="Logo" className="w-8" />
@@ -167,10 +170,16 @@ const MenuLateralComponent = () => {
         className="btn-sair"
         id="btn-sair"
         aria-label="Sair"
-        onClick={() => {
-          localStorage.clear();
-          sessionStorage.clear();
-          window.location.href = "/";
+        onClick={async () => {
+          try {
+            await postLogout();
+          } catch (error) {
+            console.error("Logout falhou:", error);
+          } finally {
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.href = "/desconectado";
+          }
         }}
       >
         <svg

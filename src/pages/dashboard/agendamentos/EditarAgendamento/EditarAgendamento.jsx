@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import MainComponent from "../../components/MainComponent/MainComponent";
 import MenuLateralComponent from "../../components/MenuLateral/MenuLateralComponent";
 import "./EditarAgendamento.css";
-import { FaTrashCan } from "react-icons/fa6";
-import { FaRegSave, FaSave } from "react-icons/fa";
+import { FaFileArrowUp, FaTrashCan } from "react-icons/fa6";
+import { FaFile, FaRegSave, FaSave } from "react-icons/fa";
 import {
   confirmCancelEdit,
   errorMessage,
@@ -16,6 +16,8 @@ import {
 } from "../../../../provider/api/agendamentos/fetchs-agendamentos.js";
 import { putAgendamento } from "../../../../provider/api/agendamentos/fetchs-agendamentos.js";
 import UserSearch from "../../components/UserSearch/UserSearch";
+import ModalRelatorio from "../../components/ModalCadastrarRelatorio/ModalCadastrarRelatorio.jsx";
+import { getRelatorioPorSessao } from "../../../../provider/api/agendamentos/fetchs-relatorio";
 import {
   formatDateToBackend,
   formatDateToFrontend,
@@ -29,6 +31,9 @@ const EditarAgendamento = () => {
   const [diaSemana, setDiaSemana] = useState(0);
   const [novoHorario, setNovoHorario] = useState("");
   const [novoPacienteSelecionado, setNovoPacienteSelecionado] = useState(null);
+  const [showModalRelatorio, setShowModalRelatorio] = useState(false);
+  const [relatorioExistente, setRelatorioExistente] = useState(null);
+  const [loadingRelatorio, setLoadingRelatorio] = useState(true);
 
   const { id } = useParams();
 
@@ -71,6 +76,15 @@ const EditarAgendamento = () => {
             statusSessao: response.statusSessao,
           });
           setNovoHorario(horaPadronizada);
+          // Buscar relatório existente para a sessão
+          setLoadingRelatorio(true);
+          const relatorio = await getRelatorioPorSessao(response.id);
+          if (relatorio && relatorio.conteudo) {
+            setRelatorioExistente(relatorio.conteudo);
+          } else {
+            setRelatorioExistente(null);
+          }
+          setLoadingRelatorio(false);
         } else {
           console.error("Nenhum agendamento encontrado para o ID:", id);
         }
@@ -356,6 +370,7 @@ const EditarAgendamento = () => {
                       ))}
                   </select>
                 </div>
+                
                 <div className="select-container w-full">
                   <label htmlFor="horario" className="input-label">
                     Novo Horário:
@@ -440,6 +455,37 @@ const EditarAgendamento = () => {
                 <FaRegSave className="" size={20} />
                 Salvar Alterações
               </button>
+            )}
+            {agendamento.statusSessao == "CONCLUIDA" && (
+              <>
+                <button
+                  type="button"
+                  className="btn_primario rounded-full flex gap-2"
+                  onClick={() => setShowModalRelatorio(true)}
+                  disabled={loadingRelatorio}
+                >
+                  <FaFileArrowUp className="" size={20} />
+                  {loadingRelatorio
+                    ? "Carregando..."
+                    : relatorioExistente
+                      ? "Visualizar Relatório"
+                      : "Registrar Relatório"}
+                </button>
+                {showModalRelatorio && (
+                  <ModalRelatorio
+                    paciente={paciente}
+                    idSessao={agendamento.id}
+                    relatorioExistente={relatorioExistente}
+                    onClose={() => setShowModalRelatorio(false)}
+                    onSave={(relatorioCompleto) => {
+                      // Ao salvar, atualiza o estado para refletir que já existe relatório
+                      // Isso troca o label do botão para "Visualizar Relatório"
+                      setRelatorioExistente(relatorioCompleto?.conteudo ?? true);
+                      setShowModalRelatorio(false);
+                    }}
+                  />
+                )}
+              </>
             )}
             <button
               className="btn_secundario rounded-full"

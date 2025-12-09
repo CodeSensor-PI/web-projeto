@@ -7,12 +7,14 @@ import CheckBox from "../../components/Checkbox/Checkbox";
 import InputField from "../../components/InputField/InputField";
 import SaveButton from "../../components/SaveButton/SaveButton";
 import MainComponent from "../../components/MainComponent/MainComponent";
-import { FaUserEdit, FaUser } from "react-icons/fa";
+import { FaUserEdit, FaUser, FaFileArchive } from "react-icons/fa";
 import {
   putDesativarPaciente,
   putPaciente,
   putEndereco,
-  buscarTelefonePorIdPaciente
+  buscarTelefonePorIdPaciente,
+  uploadFotoPaciente,
+  getPacientesPorId
 } from "../../../../provider/api/pacientes/fetchs-pacientes";
 import {
   confirmCancelEdit,
@@ -26,13 +28,19 @@ import {
 import { getEnderecoPorCep } from "../../../../provider/api/pacientes/fetchs-pacientes";
 import Loading from "../../components/Loading/Loading";
 import EditButton from "../../components/EditButton/EditButton";
+import { FaFileArrowUp } from "react-icons/fa6";
+import ModalRelatorios from "../../components/ModalRelatorios/ModalRelatorios";
+import ModalCropImagem from "../../components/ModalCropImagem/ModalCropImagem";
+
 
 const EditarPaciente = () => {
+  const [showModalRelatorio, setShowModalRelatorio] = useState(false);
   const { id } = useParams();
   const [paciente, setPaciente] = React.useState({
     fkEndereco: {},
     diaConsulta: "",
     horaConsulta: "",
+    id: id,
   });
   const [isEditingGeneral, setIsEditingGeneral] = useState(false);
   const [isAtivo, setIsAtivo] = useState(false);
@@ -41,6 +49,11 @@ const EditarPaciente = () => {
   const [erro, setErro] = useState('');
   const [loading, setLoading] = useState(true); 
   const [telefone, setTelefone] = useState({});
+  const [fotoSelecionada, setFotoSelecionada] = useState(null);
+  const [previewFoto, setPreviewFoto] = useState(null);
+  const [showModalCrop, setShowModalCrop] = useState(false);
+  const [imagemParaCrop, setImagemParaCrop] = useState(null);
+  // Removido: loadingRelatorio, relatorioExistente
 
   const diasSemana = [
     "Segunda-feira",
@@ -65,7 +78,7 @@ const EditarPaciente = () => {
       setLoading(true);
       try {
         const [pacienteResponse, preferenciasResponse] = await Promise.all([
-          fetch(`/pacientes/${id}`).then((res) => res.json()),
+          getPacientesPorId(id),
           getPreferenciasPorId(id)
         ]);
 
@@ -183,6 +196,52 @@ const EditarPaciente = () => {
     }
   };
 
+  const handleSelecionarFoto = (e) => {
+    const arquivo = e.target.files[0];
+    if (arquivo) {
+      // Validar tipo de arquivo
+      if (!arquivo.type.startsWith('image/')) {
+        errorMessage('Por favor, selecione apenas arquivos de imagem.');
+        return;
+      }
+      // Validar tamanho (máx 5MB)
+      if (arquivo.size > 5 * 1024 * 1024) {
+        errorMessage('A imagem deve ter no máximo 5MB.');
+        return;
+      }
+      
+      // Criar preview para o modal de crop
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagemParaCrop(reader.result);
+        setShowModalCrop(true);
+      };
+      reader.readAsDataURL(arquivo);
+    }
+  };
+
+  const handleSalvarImagemCortada = (imagemCortada) => {
+    setFotoSelecionada(imagemCortada);
+    
+    // Criar preview da imagem cortada
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreviewFoto(reader.result);
+    };
+    reader.readAsDataURL(imagemCortada);
+    
+    setShowModalCrop(false);
+    setImagemParaCrop(null);
+  };
+
+  const handleCancelarCrop = () => {
+    setShowModalCrop(false);
+    setImagemParaCrop(null);
+    // Limpar o input file
+    const fileInput = document.getElementById('foto-upload');
+    if (fileInput) fileInput.value = '';
+  };
+
   const handleAtualizarPaciente = async () => {
     try {
       const pacienteAtualizado = {
@@ -233,6 +292,27 @@ const EditarPaciente = () => {
         );
       }
 
+      // Upload de foto se houver uma selecionada (após salvar dados do paciente)
+      if (fotoSelecionada) {
+        try {
+          const resultado = await uploadFotoPaciente(id, fotoSelecionada);
+          const urlImagem = resultado.imagemUrl || resultado.imagem_url;
+          // Atualizar o estado do paciente com a URL retornada
+          setPaciente(prev => ({
+            ...prev,
+            imagemUrl: urlImagem,
+            imagem_url: urlImagem
+          }));
+          setPreviewFoto(null);
+          setFotoSelecionada(null);
+          console.log('Foto atualizada com sucesso:', urlImagem);
+        } catch (error) {
+          console.error('Erro ao fazer upload da foto:', error);
+          errorMessage('Paciente atualizado, mas houve erro ao salvar a foto.');
+          return;
+        }
+      }
+
       if (enderecoAtualizado) {
         responseMessage("Paciente e endereço atualizados com sucesso!");
         setTimeout(() => {
@@ -278,20 +358,30 @@ const EditarPaciente = () => {
 
             <div className="flex flex-col gap-4">
               <figure>
-                <div style={{ width: 120, height: 120, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  {paciente.imagemUrl && paciente.imagemUrl.trim() !== "" ? (
+                <div style={{ width: "150px", height: "150px", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
+                  {previewFoto || paciente.imagemUrl || paciente.imagem_url ? (
                     <img
-                      src={paciente.imagemUrl}
+                      src={previewFoto || paciente.imagemUrl || paciente.imagem_url}
                       alt="Foto do paciente"
-                      style={{ width: 120, height: 120, borderRadius: "50%", objectFit: "cover" }}
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
                     />
                   ) : (
                     <FaUser size={80} color="#bdbdbd" />
                   )}
                 </div>
-                <span>
-                  <span>Upload</span> imagem
-                </span>
+                <input
+                  type="file"
+                  id="foto-upload"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={handleSelecionarFoto}
+                  disabled={!isEditingGeneral}
+                />
+                <label htmlFor="foto-upload" style={{ cursor: isEditingGeneral ? "pointer" : "not-allowed" }}>
+                  <span>
+                    <span>Upload</span> imagem
+                  </span>
+                </label>
               </figure>
               <CheckBox
                 CheckboxValue={"ativo"}
@@ -307,6 +397,20 @@ const EditarPaciente = () => {
                 disabled={!isEditingGeneral}
                 onChange={(e) => setIsAtivo(e.target.checked)}
               />
+              <button
+                type="button"
+                className="btn_primario rounded-full flex gap-2"
+                onClick={() => setShowModalRelatorio(true)}
+              >
+                <FaFileArrowUp className="" size={20} />
+                Ver Relatórios
+              </button>
+              {showModalRelatorio && (
+                <ModalRelatorios
+                  pacienteId={paciente.id}
+                  onClose={() => setShowModalRelatorio(false)}
+                />
+              )}
             </div>
 
             <section className="fields">
@@ -578,6 +682,14 @@ const EditarPaciente = () => {
           />
         </form>
       </MainComponent>
+      
+      {showModalCrop && imagemParaCrop && (
+        <ModalCropImagem
+          imagemOriginal={imagemParaCrop}
+          onSalvar={handleSalvarImagemCortada}
+          onCancelar={handleCancelarCrop}
+        />
+      )}
     </div>
   );
 };

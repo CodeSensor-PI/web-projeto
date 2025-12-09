@@ -4,9 +4,11 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    height: 90vh;
     align-items: center;
     padding: 0em 10em;
     padding-top: 4em;
+    background: linear-gradient(10deg, var(--WhiteFy) 66%, var(--DarkestBlueFy) 66%);
 
     .boxes {
         display: flex;
@@ -45,5 +47,17 @@
             background-color: var(--LightBlueFy);
             color: var(--WhiteFy);
         }
+    }
+}
+
+.header-nossa-essencia{
+    height: 20vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .titulo-section, .subtitulo-section{
+        color: var(--WhiteFy);
     }
 }

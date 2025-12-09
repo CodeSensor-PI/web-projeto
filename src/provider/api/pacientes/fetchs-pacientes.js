@@ -1,22 +1,37 @@
-import axios from "axios";
+import api from "../api";
+import { dedupeRequest, buildKeyFromUrl } from '../../../utils/requestDedupe';
 
-export const getPacientes = async () => {
+// Lista paginada de pacientes
+export const getPacientes = async (page = 1, size = 10) => {
   try {
-    const response = await axios.get("/pacientes", {
-      headers: {
-        "Content-Type": "application/json",
-      },
+    // Backend (Spring) normalmente usa paginação base 0; mapeamos UI (1-based) -> API (0-based)
+    const pageApi = Math.max(0, parseInt(page, 10) - 1 || 0);
+
+    const url = `/pacientes`;
+    const params = { page: pageApi, size };
+
+    // Use dedupeRequest para evitar chamadas duplicadas idênticas em curto espaço de tempo
+    const response = await dedupeRequest(buildKeyFromUrl(url, params), async () => {
+      return api.get(`${url}?page=${pageApi}&size=${size}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then(r => r.data);
     });
-    return response.data;
+
+    return response;
   } catch (error) {
     console.error("Erro ao encontrar pacientes:", error);
     throw error;
   }
 };
 
+// Alias semântico caso queira diferenciar na chamada
+export const getPacientesPaginado = getPacientes;
+
 export const getPacientesPorId = async (id) => {
   try {
-    const response = await axios.get(`/pacientes/${id}`, {
+    const response = await api.get(`/pacientes/${id}`, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -28,23 +43,27 @@ export const getPacientesPorId = async (id) => {
   }
 };
 
+// Busca por nome (novo endpoint dedicado: /pacientes/busca?nome=)
 export const getPacientesLista = async (pesquisar) => {
   try {
-    const response = await axios.get(`/pacientes?nome=${pesquisar}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await api.get(
+      `/pacientes/busca?nome=${encodeURIComponent(pesquisar)}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     return response.data;
   } catch (error) {
-    console.error("Erro ao encontrar pacientes:", error);
+    console.error("Erro ao buscar pacientes por nome:", error);
     throw error;
   }
 };
 
 export const postPaciente = async (paciente) => {
   try {
-    const response = await axios.post("/pacientes", paciente, {
+    const response = await api.post("/pacientes", paciente, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -58,7 +77,7 @@ export const postPaciente = async (paciente) => {
 
 export const putPaciente = async (id, paciente) => {
   try {
-    const response = await axios.put(`/pacientes/${id}`, paciente, {
+    const response = await api.put(`/pacientes/${id}`, paciente, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -70,9 +89,10 @@ export const putPaciente = async (id, paciente) => {
   }
 };
 
+// Busca endereço por CEP (mantém axios pois é externo)
 export const getEnderecoPorCep = async (cep) => {
   try {
-    const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+    const response = await api.get(`https://viacep.com.br/ws/${cep}/json/`);
 
     if (response.data.erro) {
       throw new Error("CEP não encontrado.");
@@ -86,7 +106,7 @@ export const getEnderecoPorCep = async (cep) => {
 
 export const putDesativarPaciente = async (id, paciente) => {
   try {
-    const response = await axios.put(`/pacientes/${id}/desativar`, paciente, {
+    const response = await api.put(`/pacientes/${id}/desativar`, paciente, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -100,7 +120,7 @@ export const putDesativarPaciente = async (id, paciente) => {
 
 export const putAtualizarSenhaPaciente = async (id, senha) => {
   try {
-    const response = await axios.put(`/pacientes/${id}/senha`, senha, {
+    const response = await api.put(`/pacientes/${id}/senha`, senha, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -114,7 +134,7 @@ export const putAtualizarSenhaPaciente = async (id, senha) => {
 
 export const putEndereco = async (id, endereco) => {
   try {
-    const response = await axios.put(`/enderecos/${id}`, endereco, {
+    const response = await api.put(`/enderecos/${id}`, endereco, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -126,17 +146,43 @@ export const putEndereco = async (id, endereco) => {
   }
 };
 
-
 /**
  * @param {string | number} idPaciente
  * @returns {Promise}
  */
 export const buscarTelefonePorIdPaciente = async (idPaciente) => {
   try {
-    const response = await axios.get(`/telefones/pacientes/${idPaciente}`)
-    return response.data
+    const response = await api.get(`/telefones/pacientes/${idPaciente}`);
+    return response.data;
   } catch (error) {
-    console.error("Erro ao buscar telefone por ID do paciente:", error?.message, error?.response)
-    throw error
+    console.error(
+      "Erro ao buscar telefone por ID do paciente:",
+      error?.message,
+      error?.response
+    );
+    throw error;
   }
-}
+};
+
+/**
+ * Upload de foto do paciente
+ * @param {string | number} id - ID do paciente
+ * @param {File} arquivo - Arquivo de imagem
+ * @returns {Promise}
+ */
+export const uploadFotoPaciente = async (id, arquivo) => {
+  try {
+    const formData = new FormData();
+    formData.append('imagem', arquivo);
+
+    const response = await api.post(`/pacientes/${id}/imagem`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao fazer upload da foto:", error);
+    throw error;
+  }
+};

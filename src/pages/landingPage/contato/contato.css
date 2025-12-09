@@ -8,9 +8,21 @@
     align-items: center;
     gap: 1em;
     padding: 3em;
-    background-color: var(--WhiteFy);
+    background-color: var(--DarkBlueFy);
     color: var(--BlackFy);
     padding-top: 4em;
+}
+
+.header-contato{
+    height: 20vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .titulo-section, .subtitulo-section{
+        color: var(--WhiteFy);
+    }
 }
 
 .contato-form{
@@ -24,5 +36,9 @@
         padding: 1em;
         border-bottom: 1px solid var(--GrayFy);
         background-color: var(--LightGrayFy);
+    }
+
+    label{
+        color: var(--WhiteFy);
     }
 }

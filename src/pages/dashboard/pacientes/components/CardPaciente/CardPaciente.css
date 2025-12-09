@@ -6,17 +6,19 @@
     justify-content: space-between;
     align-items: center;
     padding: 1em;
-    
-    width: fit-content;
+    width: 32%;
     min-height: 10vh;
     background-color: var(--WhiteFy);
-    border-radius: 1em;
+    border-radius: 0.5em;
     gap: 0.5em;
     border: var(--LightGrayFy) 1px solid;
 
     img{
         border-radius: 1em;
         width: 5em;
+        height: 5em;
+        object-fit: cover;
+        overflow: hidden;
     }
 
     div{

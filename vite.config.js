@@ -17,6 +17,7 @@ export default defineConfig({
         target: "http://localhost:8080/",
         changeOrigin: true,
         secure: false,
+        withCredentials: true,
         rewrite: (path) => path.replace(/^\/psicologos/, "/psicologos"),
       },
       "/planos": {
@@ -56,6 +57,24 @@ export default defineConfig({
         secure: false,
         rewrite: (path) => path.replace(/^\/telefones/, "/telefones"),
       },
+      "/relatorios": {
+        target: "http://localhost:8081/",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/relatorios/, "/relatorios"),
+      },
+      "/auth": {
+        target: "http://localhost:8080/",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/auth/, "/auth"),
+      },
+      "/password-reset": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/password-reset/, "/password-reset"),
+      }
     },
   },
 });

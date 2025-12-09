@@ -110,6 +110,26 @@ button {
   cursor: not-allowed;
 }
 
+.btn_secundario-editar-plano{
+  background-color: var(--WhiteFy);
+  border: var(--LightBlueFy) 2px solid;
+  color: var(--LightBlueFy);
+  transition: ease-in-out 0.3s;
+  height: fit-content;
+}
+.btn_secundario-editar-plano:hover{
+  color: var(--LightBlueFy);
+  background: #F5F5F5 ;
+  border: var(--LightBlueFy) 2px solid;
+  box-shadow: none;
+}
+.btn_secundario-editar-plano:focus {
+  color: var(--LightBlueFy);
+  background: #F5F5F5 ;
+  border: var(--LightBlueFy) 2px solid;
+  box-shadow: none;
+}
+
 
 
 .titulo-section {
@@ -169,12 +189,13 @@ button {
 }
 
 footer {
-  background-color: var(--DarkestBlueFy);
+  background-color: var(--DarkBlueFy);
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   padding: 2em 4em;
+  border-top: 2px solid var(--BlackFy);
 
   ul {
     display: flex;

@@ -20,6 +20,7 @@ const InputField = ({
   disabled,
   maxLength,
   maskType, // 'cpf', 'telefone', 'cep', 'hora', etc
+  showPasswordToggle, // Elemento React para o botão de toggle (ex: <button>...</button>)
   ...rest
 }) => {
   // Configurações de máscara
@@ -40,9 +41,9 @@ const InputField = ({
   };
 
   return (
-    <div className={`inputContainer ${containerWidth || "w-[45%]"}`}>
+    <div className={`inputContainer ${containerWidth || "w-[45%]"}}`}>
       <label>{labelTitle}:</label>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 relative">
         {icon && <span className="input-icon">{icon}</span>}
         {maskType ? (
           <Cleave
@@ -78,6 +79,7 @@ const InputField = ({
             {...rest}
           />
         )}
+        {showPasswordToggle && showPasswordToggle}
       </div>
     </div>
   );

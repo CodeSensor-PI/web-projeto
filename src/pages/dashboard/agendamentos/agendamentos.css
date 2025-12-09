@@ -2,7 +2,7 @@
 
 
 
-.btn_agendamento{
+.btn_agendamento {
     background-color: var(--WhiteFy);
     color: var(--DarkBlueFy);
     padding: 0em 1em;
@@ -13,7 +13,7 @@
     transition: ease-in-out 0.3s;
 }
 
-.btn_agendamento:hover{
+.btn_agendamento:hover {
     background-color: var(--DarkBlueFy);
     color: var(--WhiteFy);
 
@@ -21,7 +21,7 @@
 }
 
 
-.calendario-container{
+.calendario-container {
     display: flex;
     flex-direction: column;
     gap: 1em;
@@ -34,20 +34,16 @@
     background-color: var(--LightGrayFy);
 }
 
-.calendario-table{
+.calendario-table {
     display: flex;
     flex-direction: column;
     width: 100%;
     height: 100%;
     gap: 0.25em;
-
-    .table-tr{
-        padding-right: 1.60em;
-    }
-    
+    overflow-y: auto;
 }
 
-.calendario-table-body{
+.calendario-table-body {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -56,27 +52,24 @@
     overflow-y: auto;
 }
 
-.table-body{
-    height: 90%;
-    overflow-y: auto;
-    padding-right: 1em;
-}
 
-.calendario-card-header{
+
+.calendario-card-header {
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     width: 100%;
-    padding: 0.25em 1em ;
+    padding: 0.25em 1em;
     gap: 1em;
     /* border: 1px solid var(--DarkBlueFy); */
     background-color: var(--WhiteFy);
+    border-left: 0.5em solid var(--WhiteFy);
 }
 
 
 
-.div-calendario-card{
+.div-calendario-card {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -88,3 +81,24 @@
 }
 
 
+@media (max-width: 1668px) {
+    .calendario-card-header span {
+        font-size: 0.8em;
+    }
+}
+
+@media (max-width: 1400px) {
+    @media (max-width: 1668px) {
+        .calendario-card-header span {
+            font-size: 0.7em;
+        }
+    }
+}
+
+@media (max-width: 1300px) {
+    @media (max-width: 1668px) {
+        .calendario-card-header span {
+            font-size: 0.6em;
+        }
+    }
+}

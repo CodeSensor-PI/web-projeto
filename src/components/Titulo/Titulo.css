@@ -1,0 +1,33 @@
+.titulo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 1.5em;
+}
+
+.titulo-principal {
+  font-size: 1.8em;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 0.5em 0;
+  line-height: 1.2;
+}
+
+.titulo-subtitulo {
+  font-size: 1em;
+  font-weight: 300;
+  color: #697077;
+  margin: 0;
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .titulo-principal {
+    font-size: 1.5em;
+  }
+  
+  .titulo-subtitulo {
+    font-size: 0.9em;
+  }
+}

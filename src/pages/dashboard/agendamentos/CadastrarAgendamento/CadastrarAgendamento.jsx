@@ -1,10 +1,13 @@
-import React, { useEffect } from "react";
+ 
+import PacienteInfo from "./components/PacienteInfo";
+import AgendamentosList from "./components/AgendamentosList";
+import AgendamentoInputs from "./components/AgendamentoInputs";
+import React, { useEffect, useState, useCallback } from "react";
 import "./CadastrarAgendamento.css";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import MenuLateralComponent from "../../components/MenuLateral/MenuLateralComponent";
 import { errorMessage, responseMessage } from "../../../../utils/alert.js";
 import MainComponent from "../../components/MainComponent/MainComponent.jsx";
-import Checkbox from "../../components/Checkbox/Checkbox.jsx";
 import { getPacientesPorId } from "../../../../provider/api/pacientes/fetchs-pacientes.js";
 import {
   getAgendamentosPorPaciente,
@@ -28,15 +31,16 @@ const CadastrarAgendamento = ({ paciente }) => {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
 
-  const [agendamentos, setAgendamentos] = React.useState([]);
-  const [pacienteSelecionado, setPacienteSelecionado] = React.useState();
-  const [query, setQuery] = React.useState(paciente ? paciente.nome : "");
-  const [statusPlanoMensal, setStatusPlanoMensal] = React.useState(false);
-  const [horario, setHorario] = React.useState();
-  const [preferencias, setPreferencias] = React.useState([]);
-  const [diaSemana, setDiaSemana] = React.useState("");
-  const [diasDoMes, setDiasDoMes] = React.useState([]);
-  const [diaMesSelecionado, setDiaMesSelecionado] = React.useState("");
+  const [agendamentos, setAgendamentos] = useState([]);
+  const [pacienteSelecionado, setPacienteSelecionado] = useState();
+  const [query, setQuery] = useState(paciente ? paciente.nome : "");
+  const [horario, setHorario] = useState();
+  const [preferencias, setPreferencias] = useState([]);
+  const [diaSemana, setDiaSemana] = useState("");
+  const [diasDoMes, setDiasDoMes] = useState([]);
+  const [diaMesSelecionado, setDiaMesSelecionado] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   // Busca preferências do paciente selecionado
   useEffect(() => {
@@ -47,8 +51,7 @@ const CadastrarAgendamento = ({ paciente }) => {
           setPreferencias(response);
         }
       } catch (err) {
-        console.error("Erro ao buscar preferências:", err);
-        errorMessage("Erro ao carregar as preferências.", "small");
+        errorMessage("Paciente não possui preferências.", "small");
       }
     };
     fetchPreferencias();
@@ -98,23 +101,7 @@ const CadastrarAgendamento = ({ paciente }) => {
     fetchAgendamentosPorPaciente();
   }, [pacienteSelecionado]);
 
-  // Manipula seleção do plano mensal
-  const handlePlanoMensal = (e) => {
-    const isChecked = e.target.checked;
-    setStatusPlanoMensal(isChecked);
-    setPacienteSelecionado((prevPaciente) => ({
-      ...prevPaciente,
-      tipo: isChecked ? "PLANO" : "AVULSO",
-    }));
-  };
-
-  // Atualiza status do plano mensal no paciente selecionado
-  React.useEffect(() => {
-    setPacienteSelecionado((prevPaciente) => ({
-      ...prevPaciente,
-      planoMensal: statusPlanoMensal,
-    }));
-  }, [statusPlanoMensal]);
+  // Manipula seleção do plano mensal agora está em handlePlanoMensal (useCallback) e não há mais statusPlanoMensal
 
   // Submissão do formulário de agendamento
   const handleSubmit = async (e) => {
@@ -164,7 +151,7 @@ const CadastrarAgendamento = ({ paciente }) => {
     }
 
     try {
-      if (statusPlanoMensal) {
+  if (pacienteSelecionado.planoMensal) {
         const promises = Array.from({ length: 4 }).map((_, index) => {
           const [day, month, year] = (
             pacienteSelecionado.selectedDate || ""
@@ -235,8 +222,18 @@ const CadastrarAgendamento = ({ paciente }) => {
     }
   };
 
+   // Função para manipular o checkbox do plano mensal
+  const handlePlanoMensal = (e) => {
+    const isChecked = e.target.checked;
+    setPacienteSelecionado((prevPaciente) => ({
+      ...prevPaciente,
+      tipo: isChecked ? "PLANO" : "AVULSO",
+      planoMensal: isChecked,
+    }));
+  };
+
   // Atualiza paciente selecionado ao receber novo paciente via props
-  React.useEffect(() => {
+  useEffect(() => {
     if (paciente) {
       setPacienteSelecionado(paciente);
       setQuery(paciente.nome);
@@ -292,10 +289,10 @@ const CadastrarAgendamento = ({ paciente }) => {
       setPacienteSelecionado((prev) =>
         prev
           ? {
-              ...prev,
-              selectedDate: dayParam,
-              diaSemana: diaSemanaSelect,
-            }
+            ...prev,
+            selectedDate: dayParam,
+            diaSemana: diaSemanaSelect,
+          }
           : prev
       );
     }
@@ -342,39 +339,45 @@ const CadastrarAgendamento = ({ paciente }) => {
         >
           {/* Seção de seleção de paciente */}
           <div className="w-[80%] div-escolher-paciente">
-            <UserSearch
-              onUserSelect={(p) =>
-                setPacienteSelecionado(
-                  p
-                    ? montarPacienteComPadrao(p, {
-                        horario: pacienteSelecionado?.horario || horario,
-                        selectedDate:
-                          pacienteSelecionado?.selectedDate ||
-                          diaMesSelecionado,
-                        diaSemana: pacienteSelecionado?.diaSemana || diaSemana,
-                      })
-                    : undefined
-                )
-              }
-            />
             {!pacienteSelecionado || !pacienteSelecionado.id ? (
-              <p className="mensagem-escolha-paciente">
-                Selecione um paciente para continuar.
-              </p>
-            ) : (
-              <div className="paciente-info">
-                <p>
-                  <strong>Paciente:</strong> {pacienteSelecionado.nome}
-                </p>
-                <p>
-                  <strong>Dia para Consultas:</strong>{" "}
-                  {getNomeDiaSemana(preferencias.diaSemana)}
-                </p>
-                <p>
-                  <strong>Horário para Consultas:</strong>{" "}
-                  {preferencias.horario || "Indefinido"}
-                </p>
+              <div className=" w-[50%] div-input-escolher-paciente">
+                <UserSearch
+                  onUserSelect={(p) =>
+                    setPacienteSelecionado(
+                      p
+                        ? montarPacienteComPadrao(p, {
+                            horario: pacienteSelecionado?.horario || horario,
+                            selectedDate:
+                              pacienteSelecionado?.selectedDate ||
+                              diaMesSelecionado,
+                            diaSemana: pacienteSelecionado?.diaSemana || diaSemana,
+                          })
+                        : undefined
+                    )
+                  }
+                />
               </div>
+            ) : (
+              <>
+                <div className=" w-[30%] div-input-escolher-paciente">
+                  <UserSearch
+                    onUserSelect={(p) =>
+                      setPacienteSelecionado(
+                        p
+                          ? montarPacienteComPadrao(p, {
+                              horario: pacienteSelecionado?.horario || horario,
+                              selectedDate:
+                                pacienteSelecionado?.selectedDate ||
+                                diaMesSelecionado,
+                              diaSemana: pacienteSelecionado?.diaSemana || diaSemana,
+                            })
+                          : undefined
+                      )
+                    }
+                  />
+                </div>
+                <PacienteInfo paciente={pacienteSelecionado} preferencias={preferencias} />
+              </>
             )}
           </div>
 
@@ -382,130 +385,23 @@ const CadastrarAgendamento = ({ paciente }) => {
           <div className="container-sessao">
             {!pacienteSelecionado || !pacienteSelecionado.id ? (
               <p className="mensagem-escolha-paciente">
-                Nenhum paciente selecionado. Por favor, escolha um paciente para
-                continuar.
+                Nenhum paciente selecionado. Por favor, escolha um paciente para continuar.
               </p>
             ) : (
               <>
-                <div className="container-inputs flex gap-2">
-                  {/* Dia da semana */}
-                  <div className="select-container w-full">
-                    <label htmlFor="diaSemana" className="input-label">
-                      Dia da Semana
-                    </label>
-                    <select
-                      id="diaSemana"
-                      name="diaSemana"
-                      required
-                      className="select-field w-full"
-                      value={diaSemana}
-                      onChange={handleDiaSemanaChange}
-                    >
-                      <option value="" disabled>
-                        Selecione um dia da semana
-                      </option>
-                      <option value={1}>Segunda-feira</option>
-                      <option value={2}>Terça-feira</option>
-                      <option value={3}>Quarta-feira</option>
-                      <option value={4}>Quinta-feira</option>
-                      <option value={5}>Sexta-feira</option>
-                    </select>
-                  </div>
-                  {/* Dia do mês */}
-                  <div className="select-container w-full">
-                    <label htmlFor="diaMes" className="input-label">
-                      Dia do Mês
-                    </label>
-                    <select
-                      id="diaMes"
-                      name="diaMes"
-                      required
-                      className="select-field w-full"
-                      value={diaMesSelecionado}
-                      onChange={(e) => {
-                        setDiaMesSelecionado(e.target.value);
-                        setPacienteSelecionado((prev) => ({
-                          ...prev,
-                          selectedDate: e.target.value,
-                        }));
-                      }}
-                    >
-                      <option value="" disabled>
-                        Selecione o dia do mês
-                      </option>
-                      {diasDoMes.map((dia, idx) => (
-                        <option key={idx} value={dia}>
-                          {dia}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  {/* Horário */}
-                  <div className="select-container w-full">
-                    <label htmlFor="horario" className="input-label">
-                      Horário
-                    </label>
-                    <select
-                      id="horario"
-                      name="horario"
-                      required
-                      className="select-field w-full"
-                      value={pacienteSelecionado?.horario || horario}
-                      onChange={(e) =>
-                        setPacienteSelecionado((prev) => ({
-                          ...prev,
-                          horario: e.target.value,
-                        }))
-                      }
-                    >
-                      <option value="" disabled>
-                        Selecione um horário
-                      </option>
-                      {Array.from({ length: 9 }, (_, i) => {
-                        const hour = (8 + i).toString().padStart(2, "0");
-                        if (hour === "12") return null;
-                        return (
-                          <option key={hour} value={`${hour}:00`}>
-                            {`${hour}:00`}
-                          </option>
-                        );
-                      })}
-                    </select>
-                  </div>
-                  {/* Checkbox plano mensal */}
-                  <Checkbox
-                    labelTitle="Plano mensal ativo?"
-                    onChange={handlePlanoMensal}
-                    checked={statusPlanoMensal}
-                  />
-                </div>
-
-                {/* Lista de últimos agendamentos */}
-                <div className="agendamentos-container">
-                  <h3>Últimos Agendamentos</h3>
-                  <div className="agendamentos-list">
-                    {agendamentos.length > 0 ? (
-                      agendamentos.map((agendamento, index) => (
-                        <div key={index} className="agendamento-item">
-                          <p>
-                            <strong>Data:</strong>{" "}
-                            {new Date(agendamento.data).toLocaleDateString(
-                              "pt-BR"
-                            )}
-                          </p>
-                          <p>
-                            <strong>Horário:</strong> {agendamento.hora}
-                          </p>
-                          <p>
-                            <strong>Status:</strong> {agendamento.statusSessao}
-                          </p>
-                        </div>
-                      ))
-                    ) : (
-                      <p>Nenhum agendamento encontrado para este paciente.</p>
-                    )}
-                  </div>
-                </div>
+                <AgendamentoInputs
+                  diaSemana={diaSemana}
+                  handleDiaSemanaChange={handleDiaSemanaChange}
+                  diasDoMes={diasDoMes}
+                  diaMesSelecionado={diaMesSelecionado}
+                  setDiaMesSelecionado={setDiaMesSelecionado}
+                  setPacienteSelecionado={setPacienteSelecionado}
+                  pacienteSelecionado={pacienteSelecionado}
+                  horario={horario}
+                  setHorario={setHorario}
+                  handlePlanoMensal={handlePlanoMensal}
+                />
+                <AgendamentosList agendamentos={agendamentos} />
               </>
             )}
           </div>

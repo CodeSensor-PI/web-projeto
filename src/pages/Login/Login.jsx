@@ -3,18 +3,20 @@ import { Link } from "react-router-dom";
 import logo from "../../assets/images/LogoTipo Branco 1.svg";
 import { errorMessage, responseMessage } from "../../utils/alert.js";
 import "./login.css";
-import { FaArrowAltCircleLeft } from "react-icons/fa";
+import { FaArrowAltCircleLeft, FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
+import api from "../../provider/api/api.js";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
+      const response = await api.post(
         "/psicologos/login",
         {
           email: email,
@@ -24,36 +26,49 @@ const LoginPage = () => {
           headers: {
             "Content-Type": "application/json",
           },
+          withCredentials: true,
         }
       );
 
-      const { id, nome, token, role } = response.data;
+      const { id, nome, role } = response.data;
 
       const toCapitalize = (str) => {
         return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
       };
       const nomeFormatado = toCapitalize(nome);
 
-      if (token) {
-        localStorage.setItem("authToken", token);
-        localStorage.setItem("nomeUsuario", nomeFormatado);
-        localStorage.setItem("idUsuario", id);
-        localStorage.setItem("roleUsuario", role.role);
+      localStorage.setItem("nomeUsuario", nomeFormatado);
+      localStorage.setItem("idUsuario", id);
+      localStorage.setItem("roleUsuario", role.role);
 
-        responseMessage(`Bem vindo, ${nomeFormatado}!`);
+      responseMessage(`Bem vindo, ${nomeFormatado}!`);
 
-        setTimeout(() => {
-          if (role.id === 1) {
-            window.location.href = "/dashboard/psicologos";
-          } else if (role.id === 3) {
-            window.location.href = "/dashboard";
-          }
-        }, 2300);
-      } else {
-        errorMessage("Usuário ou senha inválidos");
-      }
+      setTimeout(() => {
+        if (role.id === 1) {
+          window.location.href = "/dashboard/psicologos";
+        } else if (role.id === 3) {
+          window.location.href = "/dashboard";
+        }
+      }, 2300);
     } catch (error) {
-      errorMessage("Usuário ou senha inválidos");
+      if (error.response) {
+        const status = error.response.status;
+        if (status === 429) {
+          const retryAfter = error.response.data.ttl
+            ? error.response.data.ttl
+            : null;
+
+          const waitMsg = retryAfter
+            ? `Tente novamente em ${retryAfter} segundos.`
+            : "Tente novamente mais tarde.";
+
+          errorMessage(`Muitas tentativas. ${waitMsg}`, "small");
+        } else {
+          errorMessage("Usuário ou senha inválidos");
+        }
+      } else {
+        errorMessage("Erro de conexão. Tente novamente.");
+      }
       console.error("Erro ao autenticar usuário:", error);
     }
   };
@@ -92,15 +107,25 @@ const LoginPage = () => {
               <label htmlFor="password" className="block text-base font-medium">
                 Senha
               </label>
-              <input
-                type="password"
-                id="password"
-                name="senha_input"
-                placeholder="Senha"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-4 border-b-2 border-lightGrayFy"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  name="senha_input"
+                  placeholder="Senha"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full p-4 border-b-2 border-lightGrayFy"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                >
+                  {showPassword ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+                </button>
+              </div>
             </div>
             <p className="">
               É necessário no mínimo 8 letras, 1 letra maiúscula e 1 número.
